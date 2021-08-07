@@ -8,6 +8,10 @@ A Domain-Specific-Language for creating expressive and simple automation scripts
 
 `$` `mvn clean install`
 
+### Lint Code
+
+`$` `mvn clean verify -Xlint:deprecation`
+
 ### Build Jar
 
 `$` `mvn clean deploy`

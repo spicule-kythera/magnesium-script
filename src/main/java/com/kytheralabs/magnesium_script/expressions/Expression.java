@@ -1,9 +1,7 @@
 package com.kytheralabs.magnesium_script.expressions;
 
-import com.kytheralabs.magnesium_script.Parser;
-import org.openqa.selenium.WebDriver;
-
 import java.util.Map;
+import org.openqa.selenium.WebDriver;
 
 abstract public class Expression {
     public static class InvalidExpressionSyntax extends Exception {
@@ -23,5 +21,5 @@ abstract public class Expression {
     }
 
     abstract public void eval();
-    abstract public Expression parse(Map<String, String> tokens) throws InvalidExpressionSyntax;
+    abstract public Expression parse(Map<String, Object> tokens) throws InvalidExpressionSyntax;
 }

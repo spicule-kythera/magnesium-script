@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.yaml.snakeyaml.Yaml;
 
 public class Lexer {
-    private final Map<String, String> script;
+    private final Map<String, Object> script;
 
-    public Lexer(Map<String, String> script) {
+    public Lexer(Map<String, Object> script) {
         this.script = script;
     }
 
@@ -17,13 +17,13 @@ public class Lexer {
         this.script = loadYAMLFile(filepath);
     }
     
-    private Map<String, String> loadYAMLFile(String filepath) throws IOException {
+    private Map<String, Object> loadYAMLFile(String filepath) throws IOException {
         Yaml yaml = new Yaml();
         InputStream input = new FileInputStream(filepath);
         return yaml.load(input);
     }
 
-    public Map<String, String> analyze() {
+    public Map<String, Object> analyze() {
         return script;
     }
 }
