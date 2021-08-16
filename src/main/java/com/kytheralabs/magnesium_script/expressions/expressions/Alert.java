@@ -4,28 +4,12 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class Alert extends Expression {
     enum Action {
-        ACCEPT, DISMISS, KEYS;
-
-        public static boolean contains(String id) {
-            for(Action e: Action.values()) {
-                if(e.name().toLowerCase().equals(id.toLowerCase())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static String valToString() {
-            String str = "";
-            for(Action a: Action.values()) {
-                str += a.name() + " ";
-            }
-            return "[ {}]".replace("{}", str);
-        }
+        ACCEPT, DISMISS, KEYS
     }
 
     long timeout = -1;
@@ -40,14 +24,14 @@ public class Alert extends Expression {
     public Alert parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Process alert `action`
         if(!tokens.containsKey("alert")) {
-            throw new InvalidExpressionSyntax("alert", "expression must specify action: `[accept, dismiss, keys]`");
+            throw new InvalidExpressionSyntax("alert", "Expected `alert` field");
         }
         String actionToken = tokens.get("alert").toString();
-        if(!Action.contains(actionToken)) {
-            throw new InvalidExpressionSyntax("alert", "Invalid action type: `" + actionToken + "`! Token must be one of the following: " + Action.valToString());
+        try {
+            action = Action.valueOf(tokens.get("alert").toString().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidExpressionSyntax("alert", "Invalid action type: `" + actionToken + "`! Token must be one of the following: " + Arrays.toString(Action.values()));
         }
-
-        action = Action.valueOf(tokens.get("alert").toString().toUpperCase());
 
         // Process `input` field
         if(action.equals(Action.KEYS)) {

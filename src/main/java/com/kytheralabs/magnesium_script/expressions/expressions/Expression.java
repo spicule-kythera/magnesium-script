@@ -14,6 +14,10 @@ abstract public class Expression {
     public static final String DATE_FMT = "yyyy_MM_dd_HH-mm-ss.SSS";
 
     public static class InvalidExpressionSyntax extends Exception {
+        InvalidExpressionSyntax(Exception e) {
+            super(e.getMessage());
+        }
+
         InvalidExpressionSyntax(String key) {
             super("Invalid syntax for expression `" + key + "`!");
         }

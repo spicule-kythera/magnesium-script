@@ -9,26 +9,26 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-class AlertExpressionParsingTest {
-    Alert alert;
+class TestAlertParsing {
+    Alert operation;
     HashMap<String, Object> tokens;
 
     @BeforeEach
     void setUp() {
-        alert = new Alert(null, null);
+        operation = new Alert(null, null);
         tokens = new HashMap<>();
     }
 
     @AfterEach
     void tearDown() {
-        alert = null;
+        operation = null;
         tokens = null;
     }
 
     @Test
     void noAlert(){
         Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-            alert.parse(tokens);
+            operation.parse(tokens);
         });
     }
 
@@ -37,7 +37,7 @@ class AlertExpressionParsingTest {
         tokens.put("alert", "non-existant alert-type");
 
         Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-            alert.parse(tokens);
+            operation.parse(tokens);
         });
     }
 
@@ -46,7 +46,7 @@ class AlertExpressionParsingTest {
         tokens.put("alert", "Accept");
 
         Assertions.assertDoesNotThrow(() -> {
-            alert.parse(tokens);
+            operation.parse(tokens);
         });
     }
 
@@ -56,7 +56,7 @@ class AlertExpressionParsingTest {
         tokens.put("timeout", 10.1);
 
         Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-            alert.parse(tokens);
+            operation.parse(tokens);
         });
     }
 
@@ -66,7 +66,7 @@ class AlertExpressionParsingTest {
         tokens.put("timeout", 10);
 
         Assertions.assertDoesNotThrow(() -> {
-            alert.parse(tokens);
+            operation.parse(tokens);
         });
     }
 }

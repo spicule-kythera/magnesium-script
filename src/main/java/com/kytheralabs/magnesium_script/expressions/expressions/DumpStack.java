@@ -1,19 +1,19 @@
 package com.kytheralabs.magnesium_script.expressions.expressions;
 
+import org.openqa.selenium.WebDriver;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Stack;
 
-import org.openqa.selenium.WebDriver;
-
 public class DumpStack extends Expression {
     String output = null;
     String tagName = null;
     Stack<String> stack = new Stack<>();
 
-    DumpStack(WebDriver driver, Expression parent) {
+    public DumpStack(WebDriver driver, Expression parent) {
         super(driver, parent);
     }
 
