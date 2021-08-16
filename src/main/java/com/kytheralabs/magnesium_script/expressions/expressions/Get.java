@@ -1,4 +1,4 @@
-package com.kytheralabs.magnesium_script.expressions;
+package com.kytheralabs.magnesium_script.expressions.expressions;
 
 import java.util.Map;
 import org.openqa.selenium.WebDriver;
@@ -6,11 +6,11 @@ import org.openqa.selenium.WebDriver;
 public class Get extends Expression {
     String url = null;
 
-    public Get(WebDriver driver) {
-        super(driver);
+    public Get(WebDriver driver, Expression parent) {
+        super(driver, parent);
     }
 
-    public void eval() {
+    public void execute() {
         driver.get(url);
     }
 

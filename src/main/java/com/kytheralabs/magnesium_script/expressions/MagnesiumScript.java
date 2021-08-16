@@ -1,14 +1,15 @@
-package com.kytheralabs.magnesium_script;
+package com.kytheralabs.magnesium_script.expressions;
 
-import java.util.Map;
-import java.io.IOException;
-import org.openqa.selenium.WebDriver;
-import net.sourceforge.argparse4j.inf.Namespace;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import com.kytheralabs.magnesium_script.expressions.expressions.Expression;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
-import com.kytheralabs.magnesium_script.expressions.Expression;
+import net.sourceforge.argparse4j.inf.Namespace;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+import java.io.IOException;
+import java.util.Map;
 
 class MagnesiumScript {
     static ArgumentParser parser = ArgumentParsers.newFor("MagnesiumScript").build()
@@ -18,7 +19,7 @@ class MagnesiumScript {
 
     public static void compile(String[] raw_args) throws IOException,
                                                   Parser.InvalidExpressionType,
-                                                  Expression.InvalidExpressionSyntax {
+            Expression.InvalidExpressionSyntax {
         // CLI Argument stuff
         parser.addArgument("filepath")
               .type(String.class)

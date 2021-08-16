@@ -1,4 +1,4 @@
-package com.kytheralabs.magnesium_script;
+package com.kytheralabs.magnesium_script.expressions;
 
 import java.io.FileInputStream;
 import java.io.InputStream;

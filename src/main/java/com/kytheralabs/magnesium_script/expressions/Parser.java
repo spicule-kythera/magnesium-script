@@ -1,14 +1,15 @@
-package com.kytheralabs.magnesium_script;
+package com.kytheralabs.magnesium_script.expressions;
 
-import java.util.Map;
-import java.util.ArrayList;
+import com.kytheralabs.magnesium_script.expressions.expressions.Alert;
+import com.kytheralabs.magnesium_script.expressions.expressions.Get;
+import com.kytheralabs.magnesium_script.expressions.expressions.Expression;
 import org.openqa.selenium.WebDriver;
-import com.kytheralabs.magnesium_script.expressions.Get;
-import com.kytheralabs.magnesium_script.expressions.Alert;
-import com.kytheralabs.magnesium_script.expressions.Expression.InvalidExpressionSyntax;
+import java.util.List;
+import java.util.Map;
 
 public class Parser {
     Map<String, Object> tokens;
+
 
     public static class InvalidExpressionType extends Exception {
         InvalidExpressionType(String expression) {
@@ -24,20 +25,22 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public Program parse(WebDriver driver) throws InvalidExpressionType, InvalidExpressionSyntax {
-        Program program = new Program();
-
+    public Program parse(WebDriver driver) throws InvalidExpressionType, Expression.InvalidExpressionSyntax {
         if(!tokens.containsKey("run")){
             throw new InvalidExpressionType("run", "MagnesiumScript requires the script to be placed under the `run` block");
         }
 
-        ArrayList<Map<String, Object>> runBlock = (ArrayList<Map<String, Object>>) tokens.get("run");
+        return parse(driver, (List<Map<String, Object>>) tokens.get("run"));
+    }
+
+    public Program parse(WebDriver driver, List<Map<String, Object>> runBlock) throws InvalidExpressionType, Expression.InvalidExpressionSyntax {
+        Program program = new Program();
 
         for (Map<String, Object> instruction : runBlock) {
             if(instruction.containsKey("alert")) {
-                program.addInstruction(new Alert(driver).parse(instruction));
+                program.addInstruction(new Alert(driver, null).parse(instruction));
             } else if(instruction.containsKey("get")) {
-                program.addInstruction(new Get(driver).parse(instruction));
+                program.addInstruction(new Get(driver, null).parse(instruction));
             }else {
                 throw new InvalidExpressionType(instruction.toString());
             }

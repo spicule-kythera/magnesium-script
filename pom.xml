@@ -21,6 +21,7 @@
     <!-- Build Config -->
     <build>
         <plugins>
+            <!-- Surefire -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -43,9 +44,23 @@
         </plugins>
     </build>
 
+    <!-- Custom repositories -->
+    <repositories>
+        <!-- AShot Repo -->
+        <repository>
+            <id>gitlab-maven-ashot</id>
+            <url>https://gitlab.com/api/v4/projects/28250236/packages/maven</url>
+        </repository>
+    </repositories>
+
     <!-- Dependencies -->
     <dependencies>
         <!-- Runtime Dependencies -->
+        <dependency>
+            <groupId>com.spicule</groupId>
+            <artifactId>ashot</artifactId>
+            <version>1.5.4-patch</version>
+        </dependency>
         <dependency>
             <groupId>net.sourceforge.argparse4j</groupId>
             <artifactId>argparse4j</artifactId>
@@ -61,18 +76,18 @@
             <artifactId>selenium-java</artifactId>
             <version>4.0.0-beta-4</version>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>[4.13.2)</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Development Dependencies -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.4.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.4.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -1,6 +1,6 @@
-package com.kytheralabs.magnesium_script;
+package com.kytheralabs.magnesium_script.expressions;
 
-import com.kytheralabs.magnesium_script.expressions.Expression;
+import com.kytheralabs.magnesium_script.expressions.expressions.Expression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,12 +11,12 @@ public class Program {
     private List<Expression> program;
     private Map<String, Object> global_context = new HashMap<>();
 
-    Program() {
+    public Program() {
         program = new ArrayList<>();
     }
 
     public void run() {
-        program.forEach(Expression::eval);
+        program.forEach(Expression::execute);
     }
 
     protected boolean addInstruction(Expression instruction) {
