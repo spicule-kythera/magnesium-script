@@ -11,7 +11,7 @@ public class Try extends Expression {
     Program tryBlock = new Program();
     Map<String, Program> catchBlocks = new HashMap<>();
 
-    Try(WebDriver driver, Expression parent) {
+    public Try(WebDriver driver, Expression parent) {
         super(driver, parent);
     }
 

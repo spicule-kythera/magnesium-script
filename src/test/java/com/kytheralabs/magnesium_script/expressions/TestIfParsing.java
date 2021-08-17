@@ -118,7 +118,7 @@ public class TestIfParsing {
     }
 
     @Test
-    void invalidElseStatement() throws Parser.InvalidExpressionType, Expression.InvalidExpressionSyntax {
+    void invalidElseStatement() {
         HashMap<String, Object> ifBlock = new HashMap<>();
         ArrayList<HashMap<String, Object>> thenBlock = new ArrayList<>();
         HashMap<String, Object> op = new HashMap<>();
