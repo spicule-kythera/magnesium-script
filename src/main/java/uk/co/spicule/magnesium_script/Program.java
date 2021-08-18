@@ -1,6 +1,6 @@
-package com.kytheralabs.magnesium_script.expressions;
+package uk.co.spicule.magnesium_script;
 
-import com.kytheralabs.magnesium_script.expressions.expressions.Expression;
+import uk.co.spicule.magnesium_script.expressions.Expression;
 
 import java.util.ArrayList;
 import java.util.HashMap;

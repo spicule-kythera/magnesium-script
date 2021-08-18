@@ -1,10 +1,11 @@
-package com.kytheralabs.magnesium_script.expressions;
+package uk.co.spicule.magnesium_script;
+
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.io.IOException;
-import org.yaml.snakeyaml.Yaml;
 
 public class Lexer {
     private final Map<String, Object> script;

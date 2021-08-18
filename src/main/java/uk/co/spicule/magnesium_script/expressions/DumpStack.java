@@ -1,4 +1,4 @@
-package com.kytheralabs.magnesium_script.expressions.expressions;
+package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.WebDriver;
 

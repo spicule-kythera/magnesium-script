@@ -1,12 +1,12 @@
-package com.kytheralabs.magnesium_script.expressions;
+package uk.co.spicule.magnesium_script;
+
+import org.yaml.snakeyaml.Yaml;
+import uk.co.spicule.magnesium_script.expressions.Expression;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-
-import com.kytheralabs.magnesium_script.expressions.expressions.Expression;
-import org.yaml.snakeyaml.Yaml;
 
 public class Sandbox {
     public static void main(String[] args) throws Parser.InvalidExpressionType, IOException, Expression.InvalidExpressionSyntax {

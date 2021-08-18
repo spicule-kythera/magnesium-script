@@ -1,15 +1,16 @@
-package com.kytheralabs.magnesium_script.expressions.expressions;
+package uk.co.spicule.magnesium_script.expressions;
 
-import com.kytheralabs.magnesium_script.expressions.Parser;
+import com.spicule.ashot.AShot;
+import com.spicule.ashot.shooting.ShootingStrategies;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
+import uk.co.spicule.magnesium_script.Parser;
+
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
-import com.spicule.ashot.AShot;
-import com.spicule.ashot.shooting.ShootingStrategies;
 
 public class Screenshot extends Expression {
     String output = null;

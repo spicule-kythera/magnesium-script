@@ -1,6 +1,6 @@
-package com.kytheralabs.magnesium_script.expressions;
+package uk.co.spicule.magnesium_script;
 
-import com.kytheralabs.magnesium_script.expressions.expressions.Expression;
+import uk.co.spicule.magnesium_script.expressions.Expression;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;

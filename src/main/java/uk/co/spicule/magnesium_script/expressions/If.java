@@ -1,7 +1,7 @@
-package com.kytheralabs.magnesium_script.expressions.expressions;
+package uk.co.spicule.magnesium_script.expressions;
 
-import com.kytheralabs.magnesium_script.expressions.Parser;
-import com.kytheralabs.magnesium_script.expressions.Program;
+import uk.co.spicule.magnesium_script.Parser;
+import uk.co.spicule.magnesium_script.Program;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 

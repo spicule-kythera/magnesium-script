@@ -1,7 +1,7 @@
-package com.kytheralabs.magnesium_script.expressions;
+package uk.co.spicule.magnesium_script;
 
-import com.kytheralabs.magnesium_script.expressions.expressions.Expression;
-import com.kytheralabs.magnesium_script.expressions.expressions.If;
+import uk.co.spicule.magnesium_script.expressions.Expression;
+import uk.co.spicule.magnesium_script.expressions.If;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

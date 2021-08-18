@@ -1,9 +1,10 @@
-package com.kytheralabs.magnesium_script.expressions.expressions;
+package uk.co.spicule.magnesium_script.expressions;
 
-import com.kytheralabs.magnesium_script.expressions.Parser;
+import uk.co.spicule.magnesium_script.Parser;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;

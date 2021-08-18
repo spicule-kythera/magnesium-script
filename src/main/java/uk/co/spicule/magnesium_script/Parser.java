@@ -1,8 +1,8 @@
-package com.kytheralabs.magnesium_script.expressions;
+package uk.co.spicule.magnesium_script;
 
-import com.kytheralabs.magnesium_script.expressions.expressions.Alert;
-import com.kytheralabs.magnesium_script.expressions.expressions.Get;
-import com.kytheralabs.magnesium_script.expressions.expressions.Expression;
+import uk.co.spicule.magnesium_script.expressions.Alert;
+import uk.co.spicule.magnesium_script.expressions.Get;
+import uk.co.spicule.magnesium_script.expressions.Expression;
 import org.openqa.selenium.WebDriver;
 import java.util.List;
 import java.util.Map;
