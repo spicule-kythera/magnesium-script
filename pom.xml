@@ -26,7 +26,13 @@
             <name>Dmitri McGuckin</name>
             <email>dmitri@spicule.co.uk</email>
             <organization>uk.co.spicule</organization>
-            <organizationUrl>http://www.sonatype.com</organizationUrl>
+            <organizationUrl>https://www.kytheralabs.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Tom Barber</name>
+            <email>tom@spicule.co.uk</email>
+            <organization>uk.co.spicule</organization>
+            <organizationUrl>https://www.kytheralabs.com</organizationUrl>
         </developer>
     </developers>
 
