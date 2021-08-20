@@ -10,63 +10,63 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 
 class TestAlertParsing {
-    Alert operation;
-    HashMap<String, Object> tokens;
+  Alert operation;
+  HashMap<String, Object> tokens;
 
-    @BeforeEach
-    void setUp() {
-        operation = new Alert(null, null);
-        tokens = new HashMap<>();
-    }
+  @BeforeEach
+  void setUp() {
+    operation = new Alert(null, null);
+    tokens = new HashMap<>();
+  }
 
-    @AfterEach
-    void tearDown() {
-        operation = null;
-        tokens = null;
-    }
+  @AfterEach
+  void tearDown() {
+    operation = null;
+    tokens = null;
+  }
 
-    @Test
-    void noAlert(){
-        Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-            operation.parse(tokens);
-        });
-    }
+  @Test
+  void noAlert() {
+    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
+      operation.parse(tokens);
+    });
+  }
 
-    @Test
-    void invalidAlertType() {
-        tokens.put("alert", "non-existant alert-type");
+  @Test
+  void invalidAlertType() {
+    tokens.put("alert", "non-existant alert-type");
 
-        Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-            operation.parse(tokens);
-        });
-    }
+    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
+      operation.parse(tokens);
+    });
+  }
 
-    @Test
-    void validAcceptAlert() {
-        tokens.put("alert", "Accept");
+  @Test
+  void validAcceptAlert() {
+    tokens.put("alert", "Accept");
 
-        Assertions.assertDoesNotThrow(() -> {
-            operation.parse(tokens);
-        });
-    }
+    Assertions.assertDoesNotThrow(() -> {
+      operation.parse(tokens);
+    });
+  }
 
-    @Test
-    void invalidTimeout() {
-        tokens.put("alert", "accept");
-        tokens.put("timeout", 10.1);
+  @Test
+  void invalidTimeout() {
+    tokens.put("alert", "accept");
+    tokens.put("timeout", 10.1);
 
-        Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-            operation.parse(tokens);
-        });
-    }
+    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
+      operation.parse(tokens);
+    });
+  }
 
-    @Test
-    void validTimeout() {
-        tokens.put("alert", "accept");
-        tokens.put("timeout", 10);
+  @Test
+  void validTimeout() {
+    tokens.put("alert", "accept");
+    tokens.put("timeout", 10);
 
-        Assertions.assertDoesNotThrow(() -> {
-            operation.parse(tokens);
-        });
-    }
+    Assertions.assertDoesNotThrow(() -> {
+      operation.parse(tokens);
+    });
+  }
 }
