@@ -22,7 +22,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
-class MagnesiumScript {
+public class MagnesiumScript {
     enum BrowserType {
         FIREFOX, CHROME, EDGE
     }
