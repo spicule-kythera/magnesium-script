@@ -21,6 +21,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Stack;
 
 public class MagnesiumScript {
     enum BrowserType {
@@ -37,6 +38,10 @@ public class MagnesiumScript {
     public MagnesiumScript(WebDriver driver, Logger LOG) {
         MagnesiumScript.driver = driver;
         MagnesiumScript.LOG = LOG;
+    }
+
+    public Stack<String> getSnapshots() {
+        return new Stack<>();
     }
 
     /**
