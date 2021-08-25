@@ -19,9 +19,10 @@ import uk.co.spicule.magnesium_script.expressions.Expression;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 public class MagnesiumScript {
     enum BrowserType {
@@ -40,8 +41,8 @@ public class MagnesiumScript {
         MagnesiumScript.LOG = LOG;
     }
 
-    public Stack<String> getSnapshots() {
-        return new Stack<>();
+    public List<String> getSnapshots() {
+        return new ArrayList<>();
     }
 
     /**
