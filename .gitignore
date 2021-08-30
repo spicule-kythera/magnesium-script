@@ -1,6 +1,11 @@
 # IDE Stuff
 .idea
-*.iml
+project
+.classpath
+.factorypath
+.project
+.settings
+**/*.iml
 **/target
 **/build
 **/out
