@@ -19,7 +19,7 @@ jobs:
           java-version: '8'
           cache: 'maven'
 
-      - name: Reset the GPG TTY ownership
+      - name: Reset the TTY ownership for GPG
         run: export GPG_TTY=$(tty)
 
       - name: Release Maven package
