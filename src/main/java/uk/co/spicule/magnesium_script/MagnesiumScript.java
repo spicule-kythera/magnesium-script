@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.expressions.Expression;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -36,7 +37,12 @@ public class MagnesiumScript {
                          "for Selenium-based web-agents.")
             .defaultHelp(true);
 
-    public MagnesiumScript(WebDriver driver, Logger LOG) {
+    public MagnesiumScript(WebDriver driver, @Nullable  Logger LOG) {
+        // Bind the logger to Ms if none was provided
+        if(LOG == null) {
+            LOG = LoggerFactory.getLogger(MagnesiumScript.class);
+        }
+
         MagnesiumScript.driver = driver;
         MagnesiumScript.LOG = LOG;
     }
