@@ -10,7 +10,7 @@
     <url>https://github.com/spicule-kythera/magnesium-script</url>
     <groupId>uk.co.spicule</groupId>
     <artifactId>magnesium-script</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.6</version>
 
     <!-- License -->
     <licenses>
@@ -171,23 +171,9 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <!-- Custom repositories -->
-    <repositories>
-        <!-- AShot Repo -->
-        <repository>
-            <id>gitlab-maven-ashot</id>
-            <url>https://gitlab.com/api/v4/projects/28250236/packages/maven</url>
-        </repository>
-    </repositories>
-
     <!-- Dependencies -->
     <dependencies>
         <!-- Runtime Dependencies -->
-        <dependency>
-            <groupId>com.spicule</groupId>
-            <artifactId>ashot</artifactId>
-            <version>1.5.4-patch</version>
-        </dependency>
         <dependency>
             <groupId>net.sourceforge.argparse4j</groupId>
             <artifactId>argparse4j</artifactId>
@@ -201,7 +187,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.0.0-beta-4</version>
+            <version>3.141.59</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
