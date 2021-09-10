@@ -1,10 +1,11 @@
 package uk.co.spicule.magnesium_script.expressions;
 
+import jdk.nashorn.internal.objects.annotations.Getter;
+import org.openqa.selenium.*;
 import uk.co.spicule.magnesium_script.Parser;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
+import javax.annotation.Nullable;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ abstract public class Expression {
     this.parent = parent;
   }
 
-  abstract public void execute();
+  abstract public @Nullable Object execute();
 
   abstract public Expression parse(Map<String, Object> tokens)
       throws InvalidExpressionSyntax, Parser.InvalidExpressionType;
@@ -47,19 +48,64 @@ abstract public class Expression {
         element);
   }
 
-  protected static String getDateString() {
-    return getDateString(new Date());
+  protected static String nowToString() {
+    return dateToString(new Date());
   }
 
-  protected static String getDateString(Date date) {
+  protected static String dateToString(Date date) {
     return new SimpleDateFormat(DATE_FMT).format(date);
   }
 
-  protected Map<String, Object> getContext() {
+  @Getter
+  protected final Map<String, Object> getContext() {
     return context;
   }
 
+  @Getter
   protected final Expression getParent() {
     return parent;
+  }
+
+  protected final By by(String locatorType, String locator) {
+    switch (locatorType.toLowerCase()) {
+      case "class":
+        return By.className(locator);
+      case "css":
+        return By.cssSelector(locator);
+      case "id":
+        return By.id(locator);
+      case "link-text":
+      case "link_text":
+        return By.linkText(locator);
+      case "name":
+        return By.name(locator);
+      case "partial-link-text":
+      case "partial_link_text":
+        return By.partialLinkText(locator);
+      case "tag-name":
+      case "tag_name":
+        return By.tagName(locator);
+      case "xpath":
+        return By.xpath(locator);
+      default:
+        throw new InvalidArgumentException("Unsupported locator type: `" + locatorType + "`!");
+    }
+  }
+
+  protected void assertRequiredField(String dependent, String fieldName, Type fieldType, Map<String, Object> tokens) throws InvalidExpressionSyntax {
+    if(!tokens.containsKey(fieldName)) {
+      throw new InvalidExpressionSyntax(dependent + " expected `" + fieldName + "` in: " + tokens);
+    }
+
+    Type tokenType = tokens.get(fieldName).getClass();
+    if(fieldType != tokenType) {
+      throw new InvalidExpressionSyntax("Expected `" + fieldName + "` to be of type `" +  fieldType + "` but got `" + tokenType + "` instead!");
+    }
+  }
+
+  protected void assertRequiredFields(String dependent, Map<String, Type> fields, Map<String, Object> tokens) throws InvalidExpressionSyntax{
+    for(Map.Entry<String, Type> field : fields.entrySet()) {
+      assertRequiredField(dependent, field.getKey(), field.getValue(), tokens);
+    }
   }
 }

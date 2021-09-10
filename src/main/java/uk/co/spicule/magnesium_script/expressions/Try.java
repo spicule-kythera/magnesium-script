@@ -21,7 +21,7 @@ public class Try extends Expression {
         return parts[parts.length - 1].toLowerCase();
     }
 
-    public void execute() {
+    public Object execute() {
         try {
             tryBlock.run();
         } catch (Exception e) {
@@ -34,6 +34,7 @@ public class Try extends Expression {
                 throw e;
             }
         }
+        return null;
     }
 
     public Try parse(Map<String, Object> tokens) throws Parser.InvalidExpressionType, InvalidExpressionSyntax {
@@ -42,8 +43,7 @@ public class Try extends Expression {
             throw new InvalidExpressionSyntax("try", "`try` operation must contain list of operations to run.");
         }
         List<Map<String, Object>> tryBlockTokens = (List<Map<String, Object>>) tokens.get("try");
-        Parser parser = new Parser(null);
-        tryBlock = parser.parse(driver, tryBlockTokens);
+        tryBlock = new Parser(null).parse(driver, tryBlockTokens, this);
 
         // Process catch
         if(!tokens.containsKey("catch")){
@@ -55,7 +55,7 @@ public class Try extends Expression {
             String exceptionName = exceptionHandler.getKey().toLowerCase();
             List<Map<String, Object>> instructions = exceptionHandler.getValue();
 
-            Program handler = parser.parse(driver, instructions);
+            Program handler = new Parser(null).parse(driver, tryBlockTokens, this);
             catchBlocks.put(exceptionName, handler);
         }
 

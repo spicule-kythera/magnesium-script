@@ -9,11 +9,11 @@ public class Screenshot extends Expression {
     String output = null;
     String tagName = null;
 
-    Screenshot(WebDriver driver, Expression parent) {
+    public Screenshot(WebDriver driver, Expression parent) {
         super(driver, parent);
     }
 
-    public void execute() {
+    public Object execute() {
         System.out.println("Not implemented!");
 //        // Create the filepath
 //        File f = new File(output);
@@ -33,6 +33,7 @@ public class Screenshot extends Expression {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+        return null;
     }
 
     public Screenshot parse(Map<String, Object> tokens) throws InvalidExpressionSyntax, Parser.InvalidExpressionType {

@@ -25,7 +25,7 @@ public class If extends Expression {
         super(driver, parent);
     }
 
-    public void execute() {
+    public Object execute() {
         boolean predicate;
 
         switch (predicateType) {
@@ -44,6 +44,7 @@ public class If extends Expression {
         } else if(elseBlock != null) {
             elseBlock.run();
         }
+        return null;
     }
 
     public If parse(Map<String, Object> tokens) throws InvalidExpressionSyntax, Parser.InvalidExpressionType {

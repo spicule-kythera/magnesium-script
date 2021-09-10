@@ -16,13 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.expressions.Expression;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class MagnesiumScript {
@@ -37,18 +34,14 @@ public class MagnesiumScript {
                          "for Selenium-based web-agents.")
             .defaultHelp(true);
 
-    public MagnesiumScript(WebDriver driver, @Nullable  Logger LOG) {
-        // Bind the logger to Ms if none was provided
-        if(LOG == null) {
-            LOG = LoggerFactory.getLogger(MagnesiumScript.class);
-        }
-
+    public MagnesiumScript(WebDriver driver) {
         MagnesiumScript.driver = driver;
-        MagnesiumScript.LOG = LOG;
+        LOG = LoggerFactory.getLogger(MagnesiumScript.class);
     }
 
-    public List<String> getSnapshots() {
-        return new ArrayList<>();
+    public MagnesiumScript(WebDriver driver, Logger LOG) {
+        MagnesiumScript.driver = driver;
+        MagnesiumScript.LOG = LOG;
     }
 
     /**
@@ -60,7 +53,7 @@ public class MagnesiumScript {
      * @throws Parser.InvalidExpressionType Occurs when an unknown expression is detected
      * @throws Expression.InvalidExpressionSyntax Occurs when a syntactic error is detected
      */
-    public void interpret(Path filePath) throws IOException,
+    public Program interpret(Path filePath) throws IOException,
                                                 ParseException,
                                                 Parser.InvalidExpressionType,
                                                 Expression.InvalidExpressionSyntax {
@@ -75,7 +68,7 @@ public class MagnesiumScript {
             throw new InvalidArgumentException("Unsupported parsing for file with type: " + fileName);
         }
 
-        interpret(tokens);
+        return interpret(tokens);
     }
 
     /**
@@ -84,16 +77,25 @@ public class MagnesiumScript {
      * @throws Parser.InvalidExpressionType Occurs when an unknown expression is detected
      * @throws Expression.InvalidExpressionSyntax Occurs when a syntactic error is detected
      */
-    public void interpret(Map<String, Object> script) throws Parser.InvalidExpressionType,
+    public Program interpret(Map<String, Object> script) throws Parser.InvalidExpressionType,
                                                              Expression.InvalidExpressionSyntax {
         // Parse program
         Parser parser = new Parser(script);
         Program program = parser.parse(driver);
 
         // Run parsed program
-        program.run();
+        return program.run();
     }
 
+    /**
+     * The main method if running the JAR as an executable and not a library
+     * @param args arguments and options passed in from the command line
+     * @throws ArgumentParserException
+     * @throws IOException
+     * @throws Parser.InvalidExpressionType
+     * @throws ParseException
+     * @throws Expression.InvalidExpressionSyntax
+     */
     public static void main(String[] args) throws ArgumentParserException,
                                                   IOException,
                                                   Parser.InvalidExpressionType,

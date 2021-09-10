@@ -13,8 +13,9 @@ public class Get extends Expression {
         super(driver, parent);
     }
 
-    public void execute() {
+    public Object execute() {
         driver.get(url.toString());
+        return null;
     }
 
     public Get parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {

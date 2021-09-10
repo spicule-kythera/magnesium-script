@@ -56,7 +56,7 @@ public class Alert extends Expression {
     return this;
   }
 
-  public void execute() {
+  public Object execute() {
     try {
       // TODO: Find the replacement for deprecated WebDriverWait
       alert = driver.switchTo().alert();
@@ -64,7 +64,7 @@ public class Alert extends Expression {
       // timeout).until(ExpectedConditions.alertIsPresent());
     } catch (NoAlertPresentException | TimeoutException e) {
       System.out.println("Waited " + timeout + "s for an alert but timed out!");
-      return;
+      return null;
     }
 
     switch (action) {
@@ -75,5 +75,6 @@ public class Alert extends Expression {
     case KEYS:
       alert.sendKeys(keys);
     }
+    return null;
   }
 }

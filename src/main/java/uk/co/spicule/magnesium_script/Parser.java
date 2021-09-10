@@ -1,9 +1,8 @@
 package uk.co.spicule.magnesium_script;
 
-import uk.co.spicule.magnesium_script.expressions.Alert;
-import uk.co.spicule.magnesium_script.expressions.Get;
-import uk.co.spicule.magnesium_script.expressions.Expression;
 import org.openqa.selenium.WebDriver;
+import uk.co.spicule.magnesium_script.expressions.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -32,15 +31,31 @@ public class Parser {
     return parse(driver, (List<Map<String, Object>>) tokens.get("run"));
   }
 
-  public Program parse(WebDriver driver, List<Map<String, Object>> runBlock)
+  public Program parse(WebDriver driver, List<Map<String, Object>> runBlock) throws InvalidExpressionType, Expression.InvalidExpressionSyntax {
+    return parse(driver, runBlock, null);
+  }
+
+  public Program parse(WebDriver driver, List<Map<String, Object>> runBlock, Expression parent)
       throws InvalidExpressionType, Expression.InvalidExpressionSyntax {
     Program program = new Program();
 
     for (Map<String, Object> instruction : runBlock) {
       if (instruction.containsKey("alert")) {
-        program.addInstruction(new Alert(driver, null).parse(instruction));
+        program.addInstruction(new Alert(driver, parent).parse(instruction));
+      } else if (instruction.containsKey("dump-stack") || instruction.containsKey("dump_stack")) {
+        program.addInstruction(new DumpStack(driver, parent).parse(instruction));
+      } else if (instruction.containsKey("for")) {
+        program.addInstruction(new For(driver, parent).parse(instruction));
       } else if (instruction.containsKey("get")) {
-        program.addInstruction(new Get(driver, null).parse(instruction));
+        program.addInstruction(new Get(driver, parent).parse(instruction));
+      } else if (instruction.containsKey("if")) {
+        program.addInstruction(new If(driver, parent).parse(instruction));
+      } else if (instruction.containsKey("screenshot")) {
+        program.addInstruction(new Screenshot(driver, parent).parse(instruction));
+      } else if (instruction.containsKey("snapshot")) {
+        program.addInstruction(new Snapshot(driver, parent).parse(instruction));
+      } else if (instruction.containsKey("try")) {
+        program.addInstruction(new Try(driver, parent).parse(instruction));
       } else {
         throw new InvalidExpressionType(instruction.toString());
       }

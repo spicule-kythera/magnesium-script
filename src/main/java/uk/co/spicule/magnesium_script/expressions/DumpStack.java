@@ -17,7 +17,7 @@ public class DumpStack extends Expression {
         super(driver, parent);
     }
 
-    public void execute() {
+    public Object execute() {
         // TODO: Pass through stack, somehow
 
         try {
@@ -42,6 +42,7 @@ public class DumpStack extends Expression {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public DumpStack parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
