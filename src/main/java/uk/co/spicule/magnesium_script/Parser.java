@@ -43,6 +43,7 @@ public class Parser {
       if (instruction.containsKey("alert")) {
         program.addInstruction(new Alert(driver, parent).parse(instruction));
       } else if (instruction.containsKey("dump-stack") || instruction.containsKey("dump_stack")) {
+
         program.addInstruction(new DumpStack(driver, parent).parse(instruction));
       } else if (instruction.containsKey("for")) {
         program.addInstruction(new For(driver, parent).parse(instruction));

@@ -7,9 +7,7 @@ import uk.co.spicule.magnesium_script.Parser;
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 abstract public class Expression {
   public static final String DATE_FMT = "yyyy_MM_dd_HH-mm-ss.SSS";
@@ -107,5 +105,25 @@ abstract public class Expression {
     for(Map.Entry<String, Type> field : fields.entrySet()) {
       assertRequiredField(dependent, field.getKey(), field.getValue(), tokens);
     }
+  }
+
+  protected boolean assertOptionalField(String fieldName, Type fieldType, Map<String, Object> tokens) throws InvalidExpressionSyntax {
+    if(tokens.containsKey(fieldName)) {
+      Type tokenType = tokens.get(fieldName).getClass();
+      if(fieldType != tokenType) {
+        throw new InvalidExpressionSyntax("Expected optional-field `" + fieldName + "` to be of type `" +  fieldType + "` but got `" + tokenType + "` instead!");
+      }
+      return true;
+    }
+    return false;
+  }
+
+  protected List<Boolean> assertOptionalFields(Map<String, Type> fields, Map<String, Object> tokens) throws InvalidExpressionSyntax{
+    List<Boolean> fieldsExist = new ArrayList<>();
+    for(Map.Entry<String, Type> field : fields.entrySet()) {
+      boolean exists = assertOptionalField(field.getKey(), field.getValue(), tokens);
+      fieldsExist.add(exists);
+    }
+    return fieldsExist;
   }
 }

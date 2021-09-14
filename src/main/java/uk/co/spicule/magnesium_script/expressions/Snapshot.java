@@ -20,6 +20,7 @@ public class Snapshot extends Expression {
     }
 
     public Snapshot parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
+        assertRequiredField("snapshot", "snapshot", Boolean.class, tokens);
         takeSnapshot = Boolean.getBoolean(tokens.get("snapshot").toString());
         return this;
     }
