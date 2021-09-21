@@ -39,26 +39,31 @@ public class Parser {
       throws InvalidExpressionType, Expression.InvalidExpressionSyntax {
     Program program = new Program();
 
-    for (Map<String, Object> instruction : runBlock) {
-      if (instruction.containsKey("alert")) {
-        program.addInstruction(new Alert(driver, parent).parse(instruction));
-      } else if (instruction.containsKey("dump-stack") || instruction.containsKey("dump_stack")) {
+    for (Map<String, Object> instructionBlock : runBlock) {
+      String instructionName = instructionBlock.keySet().toArray()[0].toString();
 
-        program.addInstruction(new DumpStack(driver, parent).parse(instruction));
-      } else if (instruction.containsKey("for")) {
-        program.addInstruction(new For(driver, parent).parse(instruction));
-      } else if (instruction.containsKey("get")) {
-        program.addInstruction(new Get(driver, parent).parse(instruction));
-      } else if (instruction.containsKey("if")) {
-        program.addInstruction(new If(driver, parent).parse(instruction));
-      } else if (instruction.containsKey("screenshot")) {
-        program.addInstruction(new Screenshot(driver, parent).parse(instruction));
-      } else if (instruction.containsKey("snapshot")) {
-        program.addInstruction(new Snapshot(driver, parent).parse(instruction));
-      } else if (instruction.containsKey("try")) {
-        program.addInstruction(new Try(driver, parent).parse(instruction));
+      if (instructionName.equals("alert")) {
+        program.addInstruction(new Alert(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("click")) {
+        program.addInstruction(new Click(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("dump-stack")) {
+        program.addInstruction(new DumpStack(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("for")) {
+        program.addInstruction(new For(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("get")) {
+        program.addInstruction(new Get(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("if")) {
+        program.addInstruction(new If(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("screenshot")) {
+        program.addInstruction(new Screenshot(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("snapshot")) {
+        program.addInstruction(new Snapshot(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("try")) {
+        program.addInstruction(new Try(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("wait")) {
+        program.addInstruction(new Wait(driver, parent).parse(instructionBlock));
       } else {
-        throw new InvalidExpressionType(instruction.toString());
+        throw new InvalidExpressionType(instructionName);
       }
     }
     return program;

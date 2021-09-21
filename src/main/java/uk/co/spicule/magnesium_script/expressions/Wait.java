@@ -1,6 +1,11 @@
 package uk.co.spicule.magnesium_script.expressions;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -8,104 +13,112 @@ import java.util.Map;
 
 public class Wait extends Expression {
     enum WaitType {
-        ELEMENT, PAGE_LOAD, UNCONDITIONAL
+        ELEMENT_EXISTS,
+        ELEMENT_CLICKABLE,
+        PAGE_LOADS,
+        UNCONDITIONAL
     }
-
-    // Static things
-    private final static long defaultTimeout = 30; // Default timeout in seconds
 
     // Operation instance things
     WaitType type = WaitType.UNCONDITIONAL;
-    long timeout = defaultTimeout;
-    Map<String, Object> condition = new HashMap<>();
-
+    long timeout = 30; // Wait-Timeout in seconds
+    ExpectedCondition condition = null;
 
     public Wait(WebDriver driver, Expression parent) {
         super(driver, parent);
     }
 
-    public Object execute() {
-        switch (type) {
-            case ELEMENT:
-                return executeWaitForElement();
-            case PAGE_LOAD:
-                return executeWaitForPageLoad();
-            case UNCONDITIONAL:
-                return executeWaitUnconditional();
-            default:
-                throw new UnknownError("Invalid wait-for type: `" + type + "`!");
+    public Wait(WebDriver driver, Expression parent, WaitType condition, By locator) {
+        super(driver, parent);
+
+        switch(condition) {
+            case ELEMENT_EXISTS:
+                this.condition = ExpectedConditions.presenceOfElementLocated(locator);
+                break;
+            case ELEMENT_CLICKABLE:
+                this.condition = ExpectedConditions.elementToBeClickable(locator);
         }
     }
 
-    private Object executeWaitForElement() {
-        String locatorType = condition.get("locator-type").toString();
-        String locator = condition.get("locator").toString();
-
-
-        return  null;
-    }
-
-    private Object executeWaitForPageLoad() {
-
-        return  null;
-    }
-
-    private Object executeWaitUnconditional() {
-
-        return  null;
+    public Object execute() {
+        new WebDriverWait(driver, timeout).until(condition);
+        return null;
     }
 
     public Wait parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required fields
         HashMap<String, Type> requiredFields = new HashMap<>();
         requiredFields.put("wait", Integer.class);
-        requiredFields.put("for", String.class);
+        requiredFields.put("until", String.class);
         assertRequiredFields("wait", requiredFields, tokens);
 
+        // Populate timeout
+        timeout = Long.parseLong(tokens.get("wait").toString());
+
         // Determine the wait type
-        String forToken = tokens.get("for").toString().toUpperCase().replace('-', '_');
+        String forToken = tokens.get("until").toString().toUpperCase().replace('-', '_');
         type = WaitType.valueOf(forToken);
         switch(type) {
-            case ELEMENT:
-                return parseWaitForElement(tokens);
-            case PAGE_LOAD:
-                return parseWaitForPageLoad(tokens);
+            case ELEMENT_EXISTS:
+                return parseWaitUntilElementExists(tokens);
+            case ELEMENT_CLICKABLE:
+                return parseWaitUntilElementClickable(tokens);
+            case PAGE_LOADS:
+                return parseWaitUntilPageLoads(tokens);
             case UNCONDITIONAL:
-                return parseWaitUnconditional(tokens);
+                return parseWaitUnconditionally(tokens);
             default:
                 throw new InvalidExpressionSyntax("Invalid `wait` type: (`" + forToken+ "`: " + type + ")");
         }
     }
 
-    private Wait parseWaitForElement(Map<String, Object> tokens) throws InvalidExpressionSyntax {
+    private Wait parseWaitUntilElementExists(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required and optional fields
         HashMap<String, Type> requiredFields = new HashMap<>();
         requiredFields.put("locator-type", String.class);
         requiredFields.put("locator", String.class);
-        assertRequiredFields("wait-for: element", requiredFields, tokens);
-        boolean hasTimeout = assertOptionalField("timeout", Long.class, tokens);
+        assertRequiredFields("wait-forCondition: element-exits", requiredFields, tokens);
 
-        // Store the necessary condition data
-        condition.put("locator-type", tokens.get("locator-type"));
-        condition.put("locator", tokens.get("locator"));
-        if(hasTimeout) {
-            timeout = Long.parseLong(tokens.get("timeout").toString());
-        }
+        // Create the necessary wait object
+        By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        condition = ExpectedConditions.presenceOfElementLocated(locator);
 
         return this;
     }
 
-    private Wait parseWaitForPageLoad(Map<String, Object> tokens) throws InvalidExpressionSyntax {
-        // Assert the required fields
+    private Wait parseWaitUntilElementClickable(Map<String, Object> tokens) throws InvalidExpressionSyntax {
+        // Assert the required and optional fields
         HashMap<String, Type> requiredFields = new HashMap<>();
-        assertRequiredFields("wait-for: page-load", requiredFields, tokens);
+        requiredFields.put("locator-type", String.class);
+        requiredFields.put("locator", String.class);
+        assertRequiredFields("wait-forCondition: element-clickable", requiredFields, tokens);
+
+        // Create the necessary wait object
+        By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        condition = ExpectedConditions.elementToBeClickable(locator);
+
         return this;
     }
 
-    private Wait parseWaitUnconditional(Map<String, Object> tokens) throws InvalidExpressionSyntax {
-        // Assert the required fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        assertRequiredFields("wait-for: unconditional", requiredFields, tokens);
+    private Wait parseWaitUntilPageLoads(Map<String, Object> tokens) {
+        // Create the necessary wait object
+        condition = (driver) -> ((JavascriptExecutor) driver).executeScript("return document.readyState")
+                                                             .toString()
+                                                             .equals("complete");
+
+        return this;
+    }
+
+    private Wait parseWaitUnconditionally(Map<String, Object> tokens) {
+        condition = (driver) -> {
+            try {
+                // Thread.sleep() takes time in ms so multiply value by 1000
+                Thread.sleep(timeout * 1000);
+            } catch (InterruptedException e) {
+                // Do nothing
+            }
+            return true;
+        };
         return this;
     }
 }

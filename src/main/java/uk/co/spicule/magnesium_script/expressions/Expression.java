@@ -64,7 +64,7 @@ abstract public class Expression {
     return parent;
   }
 
-  protected final By by(String locatorType, String locator) {
+  public static final By by(String locatorType, String locator) {
     switch (locatorType.toLowerCase()) {
       case "class":
         return By.className(locator);

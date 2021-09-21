@@ -36,7 +36,7 @@ public class For extends Expression {
     }
 
     private Object subExecuteForEach(Map<String, Object> tokens) {
-        List<WebElement> elements = driver.findElements(by(tokens.get("locatorType").toString(), tokens.get("locator").toString()));
+        List<WebElement> elements = driver.findElements(Expression.by(tokens.get("locatorType").toString(), tokens.get("locator").toString()));
         for(WebElement element : elements) {
             context.put(tokens.get("iterator").toString(), element);
             runBlock.run();

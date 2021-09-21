@@ -1,0 +1,16 @@
+version: magnesium
+
+run:
+  - get: https://nasa.gov
+
+  - wait: 10
+    until: element-clickable
+    locator-type: id
+    locator: 'ember198'
+
+  - click: element
+    locator-type: id
+    locator: 'ember198'
+
+  - wait: 3
+    until: unconditional
