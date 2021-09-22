@@ -2,22 +2,13 @@ package uk.co.spicule.magnesium_script.expressions;
 
 import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
-import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 
 public class If extends Expression {
-    enum PredicateType {
-        EQUALS, CONTAINS
-    }
-
-    PredicateType predicateType = null;
-    String locator = null;
-    String element = null;
-    String value = null;
+    Wait condition = null;
     Program thenBlock = null;
     Program elseBlock = null;
 
@@ -26,20 +17,7 @@ public class If extends Expression {
     }
 
     public Object execute() {
-        boolean predicate;
-
-        switch (predicateType) {
-            case EQUALS:
-                predicate = true;
-                break;
-            case CONTAINS:
-                predicate = false;
-                break;
-            default:
-                throw new InvalidArgumentException("Internal error: invalid predicate: " + predicateType.toString());
-        }
-
-        if(predicate) {
+        if(conditionRunsWithoutException()) {
             thenBlock.run();
         } else if(elseBlock != null) {
             elseBlock.run();
@@ -48,61 +26,38 @@ public class If extends Expression {
     }
 
     public If parse(Map<String, Object> tokens) throws InvalidExpressionSyntax, Parser.InvalidExpressionType {
-        // Process predicate
-        if(!tokens.containsKey("if")) {
-            throw new InvalidExpressionSyntax("if", "`if` operation must contain predicate");
-        }
+        // Assert the required fields
+        HashMap<String, Type> requiredFields = new HashMap<>();
+        requiredFields.put("if", LinkedHashMap.class);
+        requiredFields.put("then", ArrayList.class);
+        assertRequiredFields("if", requiredFields, tokens);
 
-        if(!(tokens.get("if") instanceof Map)) {
-            throw new InvalidExpressionSyntax("if", "Expected `if` block to be a Map! Found: " + tokens.get("if").getClass());
-        }
+        // Assert optional fields
+        boolean hasElse = assertOptionalField("else", ArrayList.class, tokens);
 
-        // Process if block fields
-        Map<String, Object> ifBlockTokens = (Map<String, Object>) tokens.get("if");
-        if(!ifBlockTokens.containsKey("locator")) {
-            throw new InvalidExpressionSyntax("if", "`locator` field is required");
-        } else if(!ifBlockTokens.containsKey("element")) {
-            throw new InvalidExpressionSyntax("if", "`element` field is required");
-        } else if(!ifBlockTokens.containsKey("condition")) {
-            throw new InvalidExpressionSyntax("if", "`condition` field is required");
-        } else if(!ifBlockTokens.containsKey("value")) {
-            throw new InvalidExpressionSyntax("if", "`value` field is required");
-        }
-
-        // Process condition type
-        String conditionToken = ifBlockTokens.get("condition").toString();
-        try {
-            predicateType = PredicateType.valueOf(conditionToken.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidExpressionSyntax("if", "Invalid predicate type `" + conditionToken + "`! Token must be one of the following: " + Arrays.toString(PredicateType.values()));
-        }
-
-        locator = ifBlockTokens.get("locator").toString();
-        element = ifBlockTokens.get("element").toString();
-        value = ifBlockTokens.get("value").toString();
+        // Populate the condition as a wait-block
+        condition = new Wait(driver, this).parse((Map<String, Object>) tokens.get("if"));
 
         // Block sub-parser
-        Parser parser = new Parser(null);
+        Parser subParser = new Parser(null);
 
-        // Process then block
-        if(!tokens.containsKey("then")) {
-            throw new InvalidExpressionSyntax("if", "`then` field is required");
-        } else if(!(tokens.get("then") instanceof List && ((List<?>) tokens.get("then")).get(0) instanceof Map)){
-            throw new InvalidExpressionSyntax("if", "Expected `then` block to be a List<Map>, found: " + tokens.get("then").getClass());
-        }
-        List<Map<String, Object>> thenBlockTokens = (List<Map<String, Object>>) tokens.get("then");
-        thenBlock = parser.parse(driver, thenBlockTokens);
-
-        // Process else block
-        if(tokens.containsKey("else")) {
-            if(!(tokens.get("else") instanceof List && ((List<?>) tokens.get("else")).get(0) instanceof Map)){
-                throw new InvalidExpressionSyntax("if", "Expected `else` block to be a List<Map>, found: " + tokens.get("else").getClass());
-            }
-
-            List<Map<String, Object>> elseBlockTokens = (List<Map<String, Object>>) tokens.get("else");
-            elseBlock = parser.parse(driver, elseBlockTokens);
+        // Populate the then/else blocks
+        thenBlock = subParser.parse(driver, (ArrayList) tokens.get("then"));
+        if(hasElse){
+            elseBlock = subParser.parse(driver, (ArrayList) tokens.get("else"));
         }
 
         return this;
+    }
+
+    private boolean conditionRunsWithoutException() {
+        try {
+            condition.execute();
+            return true;
+        } catch (Exception e) {
+            System.out.println("If-condition failed due to the following:");
+            e.printStackTrace();
+            return false;
+        }
     }
 }

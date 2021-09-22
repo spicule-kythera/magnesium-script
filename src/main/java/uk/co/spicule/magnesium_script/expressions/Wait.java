@@ -7,7 +7,9 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,11 +18,12 @@ public class Wait extends Expression {
         ELEMENT_EXISTS,
         ELEMENT_CLICKABLE,
         PAGE_LOADS,
-        UNCONDITIONAL
+        TRUE,
+        FALSE
     }
 
     // Operation instance things
-    WaitType type = WaitType.UNCONDITIONAL;
+    WaitType type = WaitType.TRUE;
     long timeout = 30; // Wait-Timeout in seconds
     ExpectedCondition condition = null;
 
@@ -28,8 +31,12 @@ public class Wait extends Expression {
         super(driver, parent);
     }
 
-    public Wait(WebDriver driver, Expression parent, WaitType condition, By locator) {
+    public Wait(WebDriver driver, Expression parent, WaitType condition, By locator, @Nullable Integer timeout) {
         super(driver, parent);
+
+        if(timeout != null) {
+            this.timeout = timeout;
+        }
 
         switch(condition) {
             case ELEMENT_EXISTS:
@@ -49,8 +56,8 @@ public class Wait extends Expression {
         // Assert the required fields
         HashMap<String, Type> requiredFields = new HashMap<>();
         requiredFields.put("wait", Integer.class);
-        requiredFields.put("until", String.class);
         assertRequiredFields("wait", requiredFields, tokens);
+        assertRequiredMultiTypeField("until", Arrays.asList(String.class, Boolean.class), tokens);
 
         // Populate timeout
         timeout = Long.parseLong(tokens.get("wait").toString());
@@ -65,8 +72,10 @@ public class Wait extends Expression {
                 return parseWaitUntilElementClickable(tokens);
             case PAGE_LOADS:
                 return parseWaitUntilPageLoads(tokens);
-            case UNCONDITIONAL:
-                return parseWaitUnconditionally(tokens);
+            case TRUE:
+                return parseWaitUnitlTrue(tokens);
+            case FALSE:
+                return parseWaitUntilFalse(tokens);
             default:
                 throw new InvalidExpressionSyntax("Invalid `wait` type: (`" + forToken+ "`: " + type + ")");
         }
@@ -109,7 +118,7 @@ public class Wait extends Expression {
         return this;
     }
 
-    private Wait parseWaitUnconditionally(Map<String, Object> tokens) {
+    private Wait parseWaitUnitlTrue(Map<String, Object> tokens) {
         condition = (driver) -> {
             try {
                 // Thread.sleep() takes time in ms so multiply value by 1000
@@ -117,6 +126,13 @@ public class Wait extends Expression {
             } catch (InterruptedException e) {
                 // Do nothing
             }
+            return true;
+        };
+        return this;
+    }
+
+    private Wait parseWaitUntilFalse(Map<String, Object> tokens) {
+        condition = (driver) -> {
             return true;
         };
         return this;

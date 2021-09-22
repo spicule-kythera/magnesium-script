@@ -10,7 +10,7 @@
     <url>https://github.com/spicule-kythera/magnesium-script</url>
     <groupId>uk.co.spicule</groupId>
     <artifactId>magnesium-script</artifactId>
-    <version>0.0.7</version>
+    <version>0.1.0</version>
 
     <!-- License -->
     <licenses>

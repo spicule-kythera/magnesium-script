@@ -16,6 +16,7 @@ public class Click extends Expression {
 
     ClickType type = ClickType.ELEMENT;
     By locator = null;
+    Integer timeout = null;
 
     public Click(WebDriver driver, Expression parent) {
         super(driver, parent);
@@ -29,7 +30,7 @@ public class Click extends Expression {
 
     public Object execute() {
         // Wait for the element to be clickable
-        new Wait(driver, this, Wait.WaitType.ELEMENT_CLICKABLE, locator).execute();
+        new Wait(driver, this, Wait.WaitType.ELEMENT_CLICKABLE, locator, timeout).execute();
 
         // Find the element
         WebElement element = driver.findElement(locator);
@@ -52,6 +53,12 @@ public class Click extends Expression {
         requiredFields.put("locator-type", String.class);
         requiredFields.put("locator", String.class);
         assertRequiredFields("click", requiredFields, tokens);
+
+        // Assert optional fields
+        boolean hasTimeout = assertOptionalField("timeout", Integer.class, tokens);
+        if(hasTimeout) {
+            timeout = Integer.parseInt(tokens.get("timeout").toString());
+        }
 
         // Click type
         type = ClickType.valueOf(tokens.get("click").toString().toUpperCase().replace("-", "_"));

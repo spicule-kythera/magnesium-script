@@ -4,9 +4,8 @@ import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
 import org.openqa.selenium.WebDriver;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 
 public class Try extends Expression {
     Program tryBlock = new Program();
@@ -38,19 +37,18 @@ public class Try extends Expression {
     }
 
     public Try parse(Map<String, Object> tokens) throws Parser.InvalidExpressionType, InvalidExpressionSyntax {
-        // Process Try
-        if(!tokens.containsKey("try")) {
-            throw new InvalidExpressionSyntax("try", "`try` operation must contain list of operations to run.");
-        }
+        // Assert the required fields
+        HashMap<String, Type> requiredFields = new HashMap<>();
+        requiredFields.put("try", ArrayList.class);
+        requiredFields.put("catch", LinkedHashMap.class);
+        assertRequiredFields("try", requiredFields, tokens);
+
+        // Populate the try-block
         List<Map<String, Object>> tryBlockTokens = (List<Map<String, Object>>) tokens.get("try");
         tryBlock = new Parser(null).parse(driver, tryBlockTokens, this);
 
-        // Process catch
-        if(!tokens.containsKey("catch")){
-            throw new InvalidExpressionSyntax("try", "`try` operation must contain `catch` block with a map of exceptions to instructions for processing errors.");
-        }
+        // Populate the catch-block
         Map<String, List<Map<String, Object>>> catchBlockTokens = (Map<String, List<Map<String, Object>>>) tokens.get("catch");
-
         for (Map.Entry<String, List<Map<String, Object>>> exceptionHandler : catchBlockTokens.entrySet()) {
             String exceptionName = exceptionHandler.getKey().toLowerCase();
             List<Map<String, Object>> instructions = exceptionHandler.getValue();

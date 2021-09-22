@@ -5,6 +5,7 @@ import org.openqa.selenium.*;
 import uk.co.spicule.magnesium_script.Parser;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -98,6 +99,25 @@ abstract public class Expression {
     Type tokenType = tokens.get(fieldName).getClass();
     if(fieldType != tokenType) {
       throw new InvalidExpressionSyntax("Expected `" + fieldName + "` to be of type `" +  fieldType + "` but got `" + tokenType + "` instead!");
+    }
+  }
+
+  protected void assertRequiredMultiTypeField(String fieldName, List<Type> types, Map<String, Object> tokens) throws InvalidExpressionSyntax {
+    boolean matchedType = false;
+    Type tokenType = tokens.get(fieldName).getClass();
+
+    for(Type type : types) {
+      try{
+        assertRequiredField(fieldName, fieldName, type, tokens);
+        matchedType = true;
+        break;
+      } catch (InvalidExpressionSyntax e) {
+        // Do nothing if the type does not match, check for failure later
+      }
+    }
+
+    if(!matchedType) {
+      throw new InvalidExpressionSyntax("Expected `" + fieldName + "` to be one of types: `" +  types + "` but got `" + tokenType + "` instead!");
     }
   }
 

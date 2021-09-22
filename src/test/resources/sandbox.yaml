@@ -3,14 +3,17 @@ version: magnesium
 run:
   - get: https://nasa.gov
 
+  - if:
+      wait: 3
+      until: element-clickable
+      locator-type: id
+      locator: 'ember42'
+    then:
+      - click: element
+        locator-type: id
+        locator: 'ember41'
+        timeout: 1
+      - wait: 10
+        until: false
   - wait: 10
-    until: element-clickable
-    locator-type: id
-    locator: 'ember198'
-
-  - click: element
-    locator-type: id
-    locator: 'ember198'
-
-  - wait: 3
-    until: unconditional
+    until: true
