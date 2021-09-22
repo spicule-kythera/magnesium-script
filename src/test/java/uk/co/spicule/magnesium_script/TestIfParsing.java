@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class TestIfParsing {
     If operation;
@@ -140,17 +141,17 @@ public class TestIfParsing {
 
     @Test
     void validIfStatement() {
-        HashMap<String, Object> ifBlock = new HashMap<>();
+        LinkedHashMap<String, Object> ifBlock = new LinkedHashMap<>();
         ArrayList<HashMap<String, Object>> thenBlock = new ArrayList<>();
-        HashMap<String, Object> op = new HashMap<>();
+        LinkedHashMap<String, Object> op = new LinkedHashMap<>();
         op.put("get", "https://duckduckgo.com");
         thenBlock.add(op);
 
         tokens.put("if", ifBlock);
-        ifBlock.put("locator", "class");
-        ifBlock.put("element", ".someClassName");
-        ifBlock.put("condition", "equals");
-        ifBlock.put("value", "some value");
+        ifBlock.put("wait", 10);
+        ifBlock.put("until", "element-exists");
+        ifBlock.put("locator", "someRandomID");
+        ifBlock.put("locator-type", "id");
         tokens.put("then", thenBlock);
 
         Assertions.assertDoesNotThrow(() -> {
