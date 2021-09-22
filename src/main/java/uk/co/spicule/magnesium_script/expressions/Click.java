@@ -11,7 +11,12 @@ import java.util.Map;
 
 public class Click extends Expression {
     enum ClickType {
-        ELEMENT, JS
+        ELEMENT,
+        JS;
+
+        protected static ClickType stringToEnum(String name) throws InvalidExpressionSyntax {
+            return ClickType.valueOf(Expression.validateTypeClass(ClickType.class, name));
+        }
     }
 
     ClickType type = ClickType.ELEMENT;
@@ -61,7 +66,7 @@ public class Click extends Expression {
         }
 
         // Click type
-        type = ClickType.valueOf(tokens.get("click").toString().toUpperCase().replace("-", "_"));
+        type = ClickType.stringToEnum(tokens.get("click").toString());
 
         // Get the locator
         locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());

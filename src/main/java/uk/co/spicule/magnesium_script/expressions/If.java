@@ -1,11 +1,14 @@
 package uk.co.spicule.magnesium_script.expressions;
 
+import org.openqa.selenium.WebDriver;
 import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
-import org.openqa.selenium.WebDriver;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class If extends Expression {
     Wait condition = null;
@@ -17,6 +20,8 @@ public class If extends Expression {
     }
 
     public Object execute() {
+        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+
         if(conditionRunsWithoutException()) {
             thenBlock.run();
         } else if(elseBlock != null) {
@@ -55,7 +60,7 @@ public class If extends Expression {
             condition.execute();
             return true;
         } catch (Exception e) {
-            System.out.println("If-condition failed due to the following:");
+            LOG.warn("If-condition failed due to the following:");
             e.printStackTrace();
             return false;
         }

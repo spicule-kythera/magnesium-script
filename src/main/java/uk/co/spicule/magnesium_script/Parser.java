@@ -10,7 +10,7 @@ public class Parser {
   Map<String, Object> tokens;
 
   public static class InvalidExpressionType extends Exception {
-    InvalidExpressionType(String expression) {
+    public InvalidExpressionType(String expression) {
       super("Invalid expression type specified: `" + expression + "`!");
     }
 
@@ -40,7 +40,7 @@ public class Parser {
     Program program = new Program();
 
     for (Map<String, Object> instructionBlock : runBlock) {
-      String instructionName = instructionBlock.keySet().toArray()[0].toString();
+      String instructionName = instructionBlock.keySet().toArray()[0].toString().replace("_", "-");
 
       if (instructionName.equals("alert")) {
         program.addInstruction(new Alert(driver, parent).parse(instructionBlock));
@@ -54,6 +54,8 @@ public class Parser {
         program.addInstruction(new Get(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("if")) {
         program.addInstruction(new If(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("send-keys")) {
+        program.addInstruction(new SendKeys(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("screenshot")) {
         program.addInstruction(new Screenshot(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("snapshot")) {

@@ -1,7 +1,6 @@
 package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.WebDriver;
-
 import java.util.Map;
 
 public class Snapshot extends Expression {
@@ -12,6 +11,8 @@ public class Snapshot extends Expression {
     }
 
     public String execute() {
+        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+
         if(takeSnapshot){
             return driver.getPageSource();
         } else {

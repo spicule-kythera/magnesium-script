@@ -1,8 +1,8 @@
 package uk.co.spicule.magnesium_script.expressions;
 
+import org.openqa.selenium.WebDriver;
 import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
-import org.openqa.selenium.WebDriver;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -21,6 +21,8 @@ public class Try extends Expression {
     }
 
     public Object execute() {
+        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+
         try {
             tryBlock.run();
         } catch (Exception e) {

@@ -24,11 +24,17 @@ import java.util.Map;
 
 public class MagnesiumScript {
     enum BrowserType {
-        FIREFOX, CHROME, EDGE
+        FIREFOX,
+        CHROME,
+        EDGE;
+
+        protected static BrowserType stringToEnum(String name) throws Expression.InvalidExpressionSyntax {
+            return BrowserType.valueOf(Expression.validateTypeClass(BrowserType.class, name));
+        }
     }
 
     private static WebDriver driver = null;
-    protected static Logger LOG = null;
+    public final static Logger LOG = LoggerFactory.getLogger(MagnesiumScript.class);
     static ArgumentParser parser = ArgumentParsers.newFor("MagnesiumScript").build()
             .description("A Domain-Specific-Language for creating expressive and simple automation scripts " +
                          "for Selenium-based web-agents.")
@@ -36,12 +42,6 @@ public class MagnesiumScript {
 
     public MagnesiumScript(WebDriver driver) {
         MagnesiumScript.driver = driver;
-        LOG = LoggerFactory.getLogger(MagnesiumScript.class);
-    }
-
-    public MagnesiumScript(WebDriver driver, Logger LOG) {
-        MagnesiumScript.driver = driver;
-        MagnesiumScript.LOG = LOG;
     }
 
     /**
@@ -122,7 +122,7 @@ public class MagnesiumScript {
         try {
             // Get the Args
             Namespace parsedArgs = parser.parseArgs(args);
-            BrowserType type = BrowserType.valueOf(parsedArgs.getString("driver").toUpperCase());
+            BrowserType type = BrowserType.stringToEnum(parsedArgs.getString("driver"));
             boolean isHeadless = parsedArgs.getBoolean("headless");
 
             // Set the driver headless mode
@@ -142,11 +142,8 @@ public class MagnesiumScript {
                     throw new InvalidArgumentException("Internal error: unknown browser type `" + type + "`");
             }
 
-            // Set up the logger
-            Logger LOG = LoggerFactory.getLogger(MagnesiumScript.class);
-
             // Set up the interpreter
-            MagnesiumScript interpreter = new MagnesiumScript(driver, LOG);
+            MagnesiumScript interpreter = new MagnesiumScript(driver);
 
             // Parse and run the script
             Path filePath = FileSystems.getDefault().getPath(parsedArgs.getString("filePath"));

@@ -14,6 +14,8 @@ public class Get extends Expression {
     }
 
     public Object execute() {
+        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+
         driver.get(url.toString());
         return null;
     }

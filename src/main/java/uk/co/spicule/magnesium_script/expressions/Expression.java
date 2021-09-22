@@ -2,17 +2,21 @@ package uk.co.spicule.magnesium_script.expressions;
 
 import jdk.nashorn.internal.objects.annotations.Getter;
 import org.openqa.selenium.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.Parser;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 abstract public class Expression {
+  // Static things
+  public static final Logger LOG = LoggerFactory.getLogger(Expression.class);
   public static final String DATE_FMT = "yyyy_MM_dd_HH-mm-ss.SSS";
 
+  // Error specs
   public static class InvalidExpressionSyntax extends Exception {
     InvalidExpressionSyntax(Exception e) {
       super(e.getMessage());
@@ -27,11 +31,13 @@ abstract public class Expression {
     }
   }
 
+  // Instance things
   WebDriver driver;
   Expression parent;
   Map<String, Object> context = new HashMap<>();
 
   Expression(WebDriver driver, Expression parent) {
+    LOG.info("Resolving: " + this.getClass());
     this.driver = driver;
     this.parent = parent;
   }
@@ -89,6 +95,24 @@ abstract public class Expression {
       default:
         throw new InvalidArgumentException("Unsupported locator type: `" + locatorType + "`!");
     }
+  }
+
+  protected void guardedSleep(long time) {
+    try {
+      Thread.sleep(time);
+    } catch (InterruptedException e) {
+      // Do nothing
+    }
+  }
+
+  public static String validateTypeClass(Class enumeration, String value) throws InvalidExpressionSyntax {
+    List<Object> constants = Arrays.asList(enumeration.getEnumConstants());
+    for(Object e : constants) {
+      if(e.toString().equalsIgnoreCase(value.replace("-", "_"))) {
+        return e.toString();
+      }
+    }
+    throw new InvalidExpressionSyntax("Invalid type `" + value + "` for " + enumeration.getName() + "! Value must be one of the following: " + constants);
   }
 
   protected void assertRequiredField(String dependent, String fieldName, Type fieldType, Map<String, Object> tokens) throws InvalidExpressionSyntax {

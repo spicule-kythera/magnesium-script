@@ -15,11 +15,16 @@ import java.util.Map;
 
 public class Wait extends Expression {
     enum WaitType {
+        ALERT_EXISTS,
         ELEMENT_EXISTS,
         ELEMENT_CLICKABLE,
         PAGE_LOADS,
         TRUE,
-        FALSE
+        FALSE;
+
+        protected static WaitType stringToEnum(String name) throws InvalidExpressionSyntax {
+            return WaitType.valueOf(Expression.validateTypeClass(WaitType.class, name));
+        }
     }
 
     // Operation instance things
@@ -31,7 +36,7 @@ public class Wait extends Expression {
         super(driver, parent);
     }
 
-    public Wait(WebDriver driver, Expression parent, WaitType condition, By locator, @Nullable Integer timeout) {
+    public Wait(WebDriver driver, Expression parent, WaitType condition, @Nullable By locator, @Nullable Integer timeout) {
         super(driver, parent);
 
         if(timeout != null) {
@@ -39,6 +44,8 @@ public class Wait extends Expression {
         }
 
         switch(condition) {
+            case ALERT_EXISTS:
+                this.condition = ExpectedConditions.alertIsPresent();
             case ELEMENT_EXISTS:
                 this.condition = ExpectedConditions.presenceOfElementLocated(locator);
                 break;
@@ -48,8 +55,9 @@ public class Wait extends Expression {
     }
 
     public Object execute() {
-        new WebDriverWait(driver, timeout).until(condition);
-        return null;
+        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+
+        return new WebDriverWait(driver, timeout).until(condition);
     }
 
     public Wait parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
@@ -62,10 +70,13 @@ public class Wait extends Expression {
         // Populate timeout
         timeout = Long.parseLong(tokens.get("wait").toString());
 
-        // Determine the wait type
+        // Determine and parse the wait type
         String forToken = tokens.get("until").toString().toUpperCase().replace('-', '_');
-        type = WaitType.valueOf(forToken);
+        type = WaitType.stringToEnum(forToken);
+
         switch(type) {
+            case ALERT_EXISTS:
+                return parseWaitUntilAlertExists();
             case ELEMENT_EXISTS:
                 return parseWaitUntilElementExists(tokens);
             case ELEMENT_CLICKABLE:
@@ -73,12 +84,17 @@ public class Wait extends Expression {
             case PAGE_LOADS:
                 return parseWaitUntilPageLoads(tokens);
             case TRUE:
-                return parseWaitUnitlTrue(tokens);
+                return parseWaitUntilTrue();
             case FALSE:
-                return parseWaitUntilFalse(tokens);
+                return parseWaitUntilFalse();
             default:
                 throw new InvalidExpressionSyntax("Invalid `wait` type: (`" + forToken+ "`: " + type + ")");
         }
+    }
+
+    private Wait parseWaitUntilAlertExists() {
+        condition = ExpectedConditions.alertIsPresent();
+        return this;
     }
 
     private Wait parseWaitUntilElementExists(Map<String, Object> tokens) throws InvalidExpressionSyntax {
@@ -118,7 +134,7 @@ public class Wait extends Expression {
         return this;
     }
 
-    private Wait parseWaitUnitlTrue(Map<String, Object> tokens) {
+    private Wait parseWaitUntilTrue() {
         condition = (driver) -> {
             try {
                 // Thread.sleep() takes time in ms so multiply value by 1000
@@ -131,10 +147,8 @@ public class Wait extends Expression {
         return this;
     }
 
-    private Wait parseWaitUntilFalse(Map<String, Object> tokens) {
-        condition = (driver) -> {
-            return true;
-        };
+    private Wait parseWaitUntilFalse() {
+        condition = (driver) -> true;
         return this;
     }
 }

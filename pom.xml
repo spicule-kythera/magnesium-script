@@ -10,7 +10,7 @@
     <url>https://github.com/spicule-kythera/magnesium-script</url>
     <groupId>uk.co.spicule</groupId>
     <artifactId>magnesium-script</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <!-- License -->
     <licenses>
@@ -209,6 +209,11 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.32</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.32</version>
+          </dependency>
 
         <!-- Development Dependencies -->
         <dependency>
@@ -227,6 +232,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.4.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guice</artifactId>
+            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

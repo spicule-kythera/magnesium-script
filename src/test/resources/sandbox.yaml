@@ -7,13 +7,17 @@ run:
       wait: 3
       until: element-clickable
       locator-type: id
-      locator: 'ember42'
+      locator: 'ember25'
     then:
-      - click: element
+      - send-keys: dingus
         locator-type: id
-        locator: 'ember41'
-        timeout: 1
-      - wait: 10
-        until: false
+        locator: 'ember25'
+        input-rate: 400
+
+      - send-keys: '{tab}'
+        locator-type: id
+        locator: 'ember25'
+    else:
+      - get: 'https://duckduckgo.com'
   - wait: 10
     until: true

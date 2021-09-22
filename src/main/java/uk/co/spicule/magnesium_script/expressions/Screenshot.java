@@ -1,6 +1,7 @@
 package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.WebDriver;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.co.spicule.magnesium_script.Parser;
 
 import java.util.Map;
@@ -14,7 +15,9 @@ public class Screenshot extends Expression {
     }
 
     public Object execute() {
-        System.out.println("Not implemented!");
+        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+
+        throw new NotImplementedException();
 //        // Create the filepath
 //        File f = new File(output);
 //        f.mkdirs();
@@ -33,7 +36,6 @@ public class Screenshot extends Expression {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        return null;
     }
 
     public Screenshot parse(Map<String, Object> tokens) throws InvalidExpressionSyntax, Parser.InvalidExpressionType {

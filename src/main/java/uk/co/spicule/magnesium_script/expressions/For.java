@@ -13,7 +13,12 @@ import java.util.Map;
 
 public class For extends Expression {
     enum Condition {
-        EACH, ITERATOR
+        EACH,
+        ITERATOR;
+
+        protected static Condition stringToEnum(String name) throws InvalidExpressionSyntax {
+            return Condition.valueOf(Expression.validateTypeClass(Condition.class, name));
+        }
     }
 
     Condition conditionType = null;
@@ -25,6 +30,8 @@ public class For extends Expression {
     }
 
     public Object execute() {
+        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+
         switch (conditionType) {
             case EACH:
                 return subExecuteForEach(condition);
@@ -72,7 +79,7 @@ public class For extends Expression {
         assertRequiredField("for", "condition", String.class, tokens);
 
         // Populate the condition type and sub-parse accordingly
-        conditionType = Condition.valueOf(tokens.get("condition").toString().toUpperCase());
+        conditionType = Condition.stringToEnum(tokens.get("condition").toString());
         switch(conditionType) {
             case EACH:
                 subParseForEach(tokens);

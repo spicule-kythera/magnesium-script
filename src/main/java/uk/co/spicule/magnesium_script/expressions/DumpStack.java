@@ -18,8 +18,9 @@ public class DumpStack extends Expression {
     }
 
     public Object execute() {
-        // TODO: Pass through stack, somehow
+        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
 
+        // Create the directory
         try {
             // Create the directory
             new File(output).mkdir();
