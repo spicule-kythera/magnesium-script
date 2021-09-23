@@ -10,7 +10,7 @@
     <url>https://github.com/spicule-kythera/magnesium-script</url>
     <groupId>uk.co.spicule</groupId>
     <artifactId>magnesium-script</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.2-SNAPSHOT</version>
 
     <!-- License -->
     <licenses>
@@ -107,6 +107,7 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+                <version>3.8.1</version>
             </plugin>
 
             <!-- JavaDOCS Plugins -->
@@ -225,7 +226,7 @@
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>LATEST</version>
+            <version>[,3.8.1)</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -249,8 +250,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>1.4</version>
-            <scope>compile</scope>
+            <version>[2.7,)</version>
         </dependency>
     </dependencies>
 </project>

@@ -2,7 +2,6 @@ package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -70,7 +69,7 @@ public class SendKeys extends Expression {
         // Send the input
         switch (type) {
             case SPECIAL:
-                throw new NotImplementedException();
+                throw new RuntimeException("Special-characters are not supported for alert-elements!");
             case STRING:
                 for (Character c : keys.toCharArray()) {
                     alert.sendKeys(c.toString());

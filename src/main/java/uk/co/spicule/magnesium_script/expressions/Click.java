@@ -3,7 +3,6 @@ package uk.co.spicule.magnesium_script.expressions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class Click extends Expression {
                 element.click();
                 break;
             case JS:
-                throw new NotImplementedException();
+                throw new RuntimeException("js-click is not yet available!");
         }
 
         return null;
