@@ -10,11 +10,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Sandbox {
-    public static void main(String[] args) {
-        List<String> options = Arrays.asList("", "");
+    public static void main(String[] args) throws InterruptedException {
+                List<String> options = Arrays.asList("", "");
         FirefoxOptions driverOptions = new FirefoxOptions();
         options.forEach(driverOptions::addArguments);
         FirefoxDriver driver = new FirefoxDriver(driverOptions);
+
+//        driver.get("http://duckduckgo.com");
+//        Thread.sleep(3000);
+//        new Screenshot(driver, null, "~/Pictures/screenshots", "nasa").execute();
 
         MagnesiumScript interpreter = new MagnesiumScript(driver);
         URL scriptPath = MagnesiumScript.class.getClassLoader().getResource("sandbox.yaml");

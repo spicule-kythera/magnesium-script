@@ -117,7 +117,7 @@ public class SendKeys extends Expression {
     private void parseSpecialKeys() {
         Matcher matcher = SPECIAL_CHARACTER_PATTERN.matcher(keys);
         if(matcher.find()) {
-            String specialKeyName = keys.substring(1, keys.length() - 1);
+            String specialKeyName = keys.substring(1, keys.length() - 1).toUpperCase().replaceAll("-", "_");
 
             try {
                 specialKeys = Keys.valueOf(specialKeyName);

@@ -12,12 +12,15 @@ run:
       - send-keys: dingus
         locator-type: id
         locator: 'ember25'
-        input-rate: 400
+        input-rate: 50
 
-      - send-keys: '{tab}'
+      - send-keys: '{enter}'
         locator-type: id
         locator: 'ember25'
+
+      - wait: 2
+        until: true
     else:
       - get: 'https://duckduckgo.com'
-  - wait: 10
-    until: true
+  - screenshot: '~/Pictures/screenshots'
+    tag-name: 'nasa'
