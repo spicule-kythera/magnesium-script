@@ -1,26 +1,36 @@
 version: magnesium
 
 run:
-  - get: https://nasa.gov
+  - get: https://www.aetnamedicare.com/en/prescription-drugs/check-medicare-drug-list.html
 
-  - if:
-      wait: 3
-      until: element-clickable
-      locator-type: id
-      locator: 'ember25'
-    then:
-      - send-keys: dingus
-        locator-type: id
-        locator: 'ember25'
-        input-rate: 50
+  - wait: 4
+    until: element-clickable
+    locator-type: class
+    locator: getDrugInfoBtn
 
-      - send-keys: '{enter}'
-        locator-type: id
-        locator: 'ember25'
+  - click: element
+    locator-type: class
+    locator: getDrugInfoBtn
 
-      - wait: 2
-        until: true
-    else:
-      - get: 'https://duckduckgo.com'
-  - screenshot: '~/Pictures/screenshots'
-    tag-name: 'nasa'
+  - select: "Oregon"
+    by: text
+    locator-type: id
+    locator: content_section_findadrug_drugComponentContainerLeft_xmlfilter_filtergroup-state
+
+  - wait: 1
+    until: true
+
+  - select: "Multnomah"
+    by: text
+    locator-type: id
+    locator: content_section_findadrug_drugComponentContainerLeft_xmlfilter_filtergroup-county
+
+  - wait: 1
+    until: true
+
+  - select: "Aetna Medicare Choice Plan (PPO) - H9431-005"
+    by: text
+    locator-type: id
+    locator: content_section_findadrug_drugComponentContainerLeft_xmlfilter_filtergroup-plan-name
+
+  - snapshot: true

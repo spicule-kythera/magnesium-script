@@ -54,6 +54,8 @@ public class Parser {
         program.addInstruction(new Get(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("if")) {
         program.addInstruction(new If(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("select")) {
+        program.addInstruction(new Select(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("send-keys")) {
         program.addInstruction(new SendKeys(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("screenshot")) {
