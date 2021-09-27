@@ -37,7 +37,7 @@ public class Parser {
 
   public Program parse(WebDriver driver, List<Map<String, Object>> runBlock, Expression parent)
       throws InvalidExpressionType, Expression.InvalidExpressionSyntax {
-    Program program = new Program();
+    Program program = new Program(parent);
 
     for (Map<String, Object> instructionBlock : runBlock) {
       String instructionName = instructionBlock.keySet().toArray()[0].toString().replace("_", "-");

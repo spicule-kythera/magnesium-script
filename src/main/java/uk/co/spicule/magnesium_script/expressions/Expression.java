@@ -1,6 +1,7 @@
 package uk.co.spicule.magnesium_script.expressions;
 
 import jdk.nashorn.internal.objects.annotations.Getter;
+import jdk.nashorn.internal.objects.annotations.Setter;
 import org.openqa.selenium.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,8 @@ abstract public class Expression {
     this.parent = parent;
   }
 
+
+
   abstract public @Nullable Object execute() throws Break.StopIterationException;
 
   abstract public Expression parse(Map<String, Object> tokens)
@@ -66,8 +69,13 @@ abstract public class Expression {
   }
 
   @Getter
-  protected final Expression getParent() {
+  public final Expression getParent() {
     return parent;
+  }
+
+  @Setter
+  public void setParent(Expression parent) {
+    this.parent = parent;
   }
 
   public static final By by(String locatorType, String locator) {

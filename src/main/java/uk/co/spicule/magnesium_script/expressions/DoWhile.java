@@ -42,7 +42,7 @@ public class DoWhile extends ConditionalExpression implements Subroutine {
         Parser subParser = new Parser(null);
 
         // Populate the do block
-        doBlock = subParser.parse(driver, (ArrayList) tokens.get("do"));
+        doBlock = subParser.parse(driver, (ArrayList) tokens.get("do"), this);
 
         return this;
     }

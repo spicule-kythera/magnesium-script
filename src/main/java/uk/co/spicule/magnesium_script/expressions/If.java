@@ -43,9 +43,9 @@ public class If extends ConditionalExpression implements Subroutine {
         Parser subParser = new Parser(null);
 
         // Populate the then/else blocks
-        thenBlock = subParser.parse(driver, (ArrayList) tokens.get("then"));
+        thenBlock = subParser.parse(driver, (ArrayList) tokens.get("then"), this);
         if(hasElse){
-            elseBlock = subParser.parse(driver, (ArrayList) tokens.get("else"));
+            elseBlock = subParser.parse(driver, (ArrayList) tokens.get("else"), this);
         }
 
         return this;

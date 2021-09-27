@@ -220,7 +220,11 @@
             <artifactId>fileutils_2.13</artifactId>
             <version>1.2.5</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.openjdk.nashorn</groupId>
+            <artifactId>nashorn-core</artifactId>
+            <version>15.3</version>
+        </dependency>
 
         <!-- Development Dependencies -->
         <dependency>

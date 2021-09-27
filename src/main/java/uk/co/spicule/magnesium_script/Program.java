@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.expressions.*;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,9 +17,18 @@ public class Program {
     protected static Logger LOG = LoggerFactory.getLogger(Program.class);
 
     // Instance things
-    private List<String> snapshots = new ArrayList<>();
-    private List<Expression> program = new ArrayList<>();
-    private Map<String, Object> context = new HashMap<>();
+    List<String> snapshots = new ArrayList<>();
+    List<Expression> program = new ArrayList<>();
+    Expression parent = null;
+    Map<String, Object> context = new HashMap<>();
+
+    public Program() {
+
+    }
+
+    public Program(@Nullable Expression parent) {
+        this.parent = parent;
+    }
 
     public final Program run() throws Break.StopIterationException {
         for(Expression operation : program) {
@@ -45,6 +55,7 @@ public class Program {
 
     protected boolean addInstruction(Expression instruction) {
         try{
+            instruction.setParent(parent);
             program.add(instruction);
             return true;
         } catch (Exception e) {
