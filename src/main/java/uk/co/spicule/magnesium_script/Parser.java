@@ -44,8 +44,12 @@ public class Parser {
 
       if (instructionName.equals("alert")) {
         program.addInstruction(new Alert(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("break")) {
+        program.addInstruction(new Break(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("click")) {
         program.addInstruction(new Click(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("do")) {
+        program.addInstruction(new DoWhile(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("dump-stack")) {
         program.addInstruction(new DumpStack(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("for")) {
@@ -54,6 +58,8 @@ public class Parser {
         program.addInstruction(new Get(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("if")) {
         program.addInstruction(new If(driver, parent).parse(instructionBlock));
+      } else if (instructionName.equals("no-op")) {
+        program.addInstruction(new NoOp(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("select")) {
         program.addInstruction(new Select(driver, parent).parse(instructionBlock));
       } else if (instructionName.equals("send-keys")) {

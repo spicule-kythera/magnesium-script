@@ -1,7 +1,6 @@
 package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -54,10 +53,18 @@ public class Wait extends Expression {
         }
     }
 
-    public Object execute() {
-        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+    public String toString() {
+        return "Waiting for " + timeout + "s until: " + condition;
+    }
 
-        return new WebDriverWait(driver, timeout).until(condition);
+    public Object execute() {
+        LOG.debug("Waiting up to " + timeout + "s for " + type + " until: (" + condition + ")");
+
+        if(type == WaitType.PAGE_LOADS){
+            return new WebDriverWait(driver, timeout).until(condition).equals("complete");
+        } else {
+            return new WebDriverWait(driver, timeout).until(condition);
+        }
     }
 
     public Wait parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
@@ -127,9 +134,10 @@ public class Wait extends Expression {
 
     private Wait parseWaitUntilPageLoads(Map<String, Object> tokens) {
         // Create the necessary wait object
-        condition = (driver) -> ((JavascriptExecutor) driver).executeScript("return document.readyState")
-                                                             .toString()
-                                                             .equals("complete");
+        condition = ExpectedConditions.jsReturnsValue("return document.readyState");
+//        condition = (driver) -> ((JavascriptExecutor) driver).executeScript("return document.readyState")
+//                                                             .toString()
+//                                                             .equals("complete");
 
         return this;
     }

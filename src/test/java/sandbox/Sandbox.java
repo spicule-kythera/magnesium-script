@@ -16,9 +16,8 @@ public class Sandbox {
         options.forEach(driverOptions::addArguments);
         FirefoxDriver driver = new FirefoxDriver(driverOptions);
 
-//        driver.get("http://duckduckgo.com");
-//        Thread.sleep(3000);
-//        new Screenshot(driver, null, "~/Pictures/screenshots", "nasa").execute();
+        // Set logging level to debug
+        System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "Debug");
 
         MagnesiumScript interpreter = new MagnesiumScript(driver);
         URL scriptPath = MagnesiumScript.class.getClassLoader().getResource("sandbox.yaml");

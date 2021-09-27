@@ -7,21 +7,17 @@ import uk.co.spicule.magnesium_script.Program;
 import java.lang.reflect.Type;
 import java.util.*;
 
-public class Try extends Expression {
-    Program tryBlock = new Program();
+public class Try extends Expression implements Subroutine {
+    Program tryBlock = null;
     Map<String, Program> catchBlocks = new HashMap<>();
+    Program finallyBlock = null;
 
     public Try(WebDriver driver, Expression parent) {
         super(driver, parent);
     }
 
-    private static String exceptionToSlugName(Exception e) {
-        String[] parts = e.getClass().toString().split("\\.");
-        return parts[parts.length - 1].toLowerCase();
-    }
-
-    public Object execute() {
-        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+    public Object execute() throws Break.StopIterationException {
+        LOG.debug("Trying to run block " + ((tryBlock != null) ? tryBlock.toString() : null ) + ", will catch these errors: " + catchBlocks.keySet() + ", will finally run block " + ((finallyBlock != null) ? finallyBlock.toString() : null) + ")");
 
         try {
             tryBlock.run();
@@ -34,6 +30,11 @@ public class Try extends Expression {
             } else { // Re-Throw the exception
                 throw e;
             }
+        } finally {
+            // If a finally block was specified, run itc
+            if(finallyBlock != null) {
+                finallyBlock.run();
+            }
         }
         return null;
     }
@@ -44,6 +45,7 @@ public class Try extends Expression {
         requiredFields.put("try", ArrayList.class);
         requiredFields.put("catch", LinkedHashMap.class);
         assertRequiredFields("try", requiredFields, tokens);
+        boolean hasFinally = assertOptionalField("finally", ArrayList.class, tokens);
 
         // Populate the try-block
         List<Map<String, Object>> tryBlockTokens = (List<Map<String, Object>>) tokens.get("try");
@@ -59,6 +61,35 @@ public class Try extends Expression {
             catchBlocks.put(exceptionName, handler);
         }
 
+        // Populate the finally block if any
+        List<Map<String, Object>> finallyBlockTokens = (List<Map<String, Object>>) tokens.get("finally");
+        if(hasFinally) {
+            finallyBlock = new Parser(null).parse(driver, finallyBlockTokens, this);
+        }
+
         return this;
+    }
+
+    private static String exceptionToSlugName(Exception e) {
+        String[] parts = e.getClass().toString().split("\\.");
+        return parts[parts.length - 1].toLowerCase();
+    }
+
+    public List<String> getFlatStack() {
+        ArrayList<String> snapshots = new ArrayList();
+
+        // Add the try block
+        snapshots.addAll(tryBlock.getSnapshots());
+
+        // Add all of the catch blocks
+        for(Program block : catchBlocks.values()) {
+            snapshots.addAll(block.getSnapshots());
+        }
+
+        // Add the finally block if it exists
+        if(finallyBlock != null) {
+            snapshots.addAll(finallyBlock.getSnapshots());
+        }
+        return snapshots;
     }
 }

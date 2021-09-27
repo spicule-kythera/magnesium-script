@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class For extends Expression {
+public class For extends Expression implements Subroutine {
     enum Condition {
         EACH,
         ITERATOR;
@@ -23,7 +23,7 @@ public class For extends Expression {
 
     Condition conditionType = null;
     Map<String, Object> condition = new HashMap<>();
-    Program runBlock = new Program();
+    Program doBlock = new Program();
 
     public For(WebDriver driver, Expression parent) {
         super(driver, parent);
@@ -32,21 +32,28 @@ public class For extends Expression {
     public Object execute() {
         LOG.debug("Resolving expression: `" + this.getClass() + "`!");
 
-        switch (conditionType) {
-            case EACH:
-                return subExecuteForEach(condition);
-            case ITERATOR:
-                return subExecuteForIterator(condition);
-            default:
-                throw new UnknownError("This error was thrown because the for-block could not match an iterator condition. This error should never be thrown. If you are reading this, logic as we know it has failed to work. God help you.");
+        try {
+            switch (conditionType) {
+                case EACH:
+                    return subExecuteForEach(condition);
+                case ITERATOR:
+                    return subExecuteForIterator(condition);
+                default:
+                    throw new UnknownError("This error was thrown because the for-block could not match an iterator condition. This error should never be thrown. If you are reading this, logic as we know it has failed to work. God help you.");
+            }
+        } catch (Break.StopIterationException e) {
+            // Do nothing
+            LOG.warn("Exiting for expression due to break!");
         }
+        return null;
     }
 
-    private Object subExecuteForEach(Map<String, Object> tokens) {
+    private Object subExecuteForEach(Map<String, Object> tokens) throws Break.StopIterationException {
         List<WebElement> elements = driver.findElements(Expression.by(tokens.get("locatorType").toString(), tokens.get("locator").toString()));
         for(WebElement element : elements) {
             context.put(tokens.get("iterator").toString(), element);
-            runBlock.run();
+            doBlock.appendContext(context);
+            doBlock.run();
         }
         return null;
     }
@@ -69,7 +76,7 @@ public class For extends Expression {
 
         // Process do block
         ArrayList<Map<String, Object>> runBlockTokens = (ArrayList<Map<String, Object>>) tokens.get("do");
-        runBlock = new Parser(null).parse(driver, runBlockTokens, this);
+        doBlock = new Parser(null).parse(driver, runBlockTokens, this);
 
         return this;
     }
@@ -106,5 +113,11 @@ public class For extends Expression {
 
     private void subParseForIterator(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // TODO: fill
+    }
+
+    public List<String> getFlatStack() {
+        ArrayList<String> stack = new ArrayList<>();
+        stack.addAll(doBlock.getSnapshots());
+        return stack;
     }
 }

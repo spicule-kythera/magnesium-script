@@ -43,7 +43,7 @@ public class SendKeys extends Expression {
     }
 
     public Object execute() {
-        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+        LOG.debug("Sending " + type.toString() + " keys to " + locator + " `" + ((type == InputType.STRING) ? keys : specialKeys) + "` at a rate of " + inputRate + "ms/char!");
         // Get the web element and send the keys
         WebElement element = driver.findElement(locator);
 

@@ -30,6 +30,8 @@ public class Select extends Expression {
     }
 
     public Object execute() {
+        LOG.debug("Selecting from drop-down element `" + locator + "` option by " + type + ": `" + ((type == SelectType.INDEX) ? index : value) + "`!");
+
         // Wait for and find the element
         new Wait(driver, this, Wait.WaitType.ELEMENT_EXISTS, locator, null).execute();
         WebElement rawMenu = driver.findElement(locator);

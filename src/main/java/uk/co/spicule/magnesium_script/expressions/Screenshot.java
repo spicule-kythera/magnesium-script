@@ -32,13 +32,12 @@ public class Screenshot extends Expression {
     }
 
     public Object execute() {
-        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
-
         // Setup the destination path
         fileName = fileName.replace("{SERIAL_NUMBER}", String.valueOf(System.nanoTime()));
         Path outputDir = Paths.get(this.outputDir.replaceFirst("~", System.getProperty("user.home")));
         File destination = new File(outputDir.toAbsolutePath() + File.separator + fileName);
-        LOG.info("Will store screenshot at: " + destination);
+
+        LOG.debug("Taking a screenshot of page: " + driver.getCurrentUrl() + " and saving it to: " + destination);
 
         // Take the screenshot
         TakesScreenshot camera = (TakesScreenshot) driver;
@@ -65,7 +64,7 @@ public class Screenshot extends Expression {
         outputDir = tokens.get("screenshot").toString();
 
         // Populate tag-name if it exists
-        String tagName = "-magnesium-script";
+        String tagName = "magnesium-script";
         if(hasTag) {
             tagName = tokens.get("tag-name").toString();
         }

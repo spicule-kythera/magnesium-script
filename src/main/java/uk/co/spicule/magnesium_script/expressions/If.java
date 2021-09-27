@@ -5,13 +5,9 @@ import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-public class If extends Expression {
-    Wait condition = null;
+public class If extends ConditionalExpression implements Subroutine {
     Program thenBlock = null;
     Program elseBlock = null;
 
@@ -19,8 +15,8 @@ public class If extends Expression {
         super(driver, parent);
     }
 
-    public Object execute() {
-        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
+    public Object execute() throws Break.StopIterationException {
+        LOG.debug("IF " + condition.toString() + " succeeds, THEN run block " + thenBlock.toString() + ((elseBlock != null) ? (", ELSE run block " + elseBlock) : "") + "!");
 
         if(conditionRunsWithoutException()) {
             thenBlock.run();
@@ -55,14 +51,12 @@ public class If extends Expression {
         return this;
     }
 
-    private boolean conditionRunsWithoutException() {
-        try {
-            condition.execute();
-            return true;
-        } catch (Exception e) {
-            LOG.warn("If-condition failed due to the following:");
-            e.printStackTrace();
-            return false;
+    public List<String> getFlatStack() {
+        ArrayList<String> stack = new ArrayList<>();
+        stack.addAll(thenBlock.getSnapshots());
+        if(elseBlock != null) {
+            stack.addAll(elseBlock.getSnapshots());
         }
+        return stack;
     }
 }

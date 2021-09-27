@@ -13,8 +13,8 @@ import java.util.*;
 
 abstract public class Expression {
   // Static things
-  public static final Logger LOG = LoggerFactory.getLogger(Expression.class);
   public static final String DATE_FMT = "yyyy_MM_dd_HH-mm-ss.SSS";
+  public static final Logger LOG = LoggerFactory.getLogger(Expression.class);
 
   // Error specs
   public static class InvalidExpressionSyntax extends Exception {
@@ -37,12 +37,11 @@ abstract public class Expression {
   Map<String, Object> context = new HashMap<>();
 
   Expression(WebDriver driver, Expression parent) {
-    LOG.info("Resolving: " + this.getClass());
     this.driver = driver;
     this.parent = parent;
   }
 
-  abstract public @Nullable Object execute();
+  abstract public @Nullable Object execute() throws Break.StopIterationException;
 
   abstract public Expression parse(Map<String, Object> tokens)
       throws InvalidExpressionSyntax, Parser.InvalidExpressionType;
@@ -169,5 +168,13 @@ abstract public class Expression {
       fieldsExist.add(exists);
     }
     return fieldsExist;
+  }
+
+  public void appendContext(Map<String, Object> context) {
+    for(Map.Entry<String, Object> entry : context.entrySet()) {
+      if(!this.context.containsKey(entry.getKey())) {
+        this.context.put(entry.getKey(), entry.getValue());
+      }
+    }
   }
 }

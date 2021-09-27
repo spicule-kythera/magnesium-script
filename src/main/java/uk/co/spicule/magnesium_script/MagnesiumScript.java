@@ -14,6 +14,7 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.spicule.magnesium_script.expressions.Break;
 import uk.co.spicule.magnesium_script.expressions.Expression;
 
 import java.io.IOException;
@@ -54,9 +55,10 @@ public class MagnesiumScript {
      * @throws Expression.InvalidExpressionSyntax Occurs when a syntactic error is detected
      */
     public Program interpret(Path filePath) throws IOException,
-                                                ParseException,
-                                                Parser.InvalidExpressionType,
-                                                Expression.InvalidExpressionSyntax {
+                                                   ParseException,
+                                                   Parser.InvalidExpressionType,
+                                                   Expression.InvalidExpressionSyntax,
+                                                   Break.StopIterationException {
         Map<String, Object> tokens;
         String fileName = filePath.toString().toLowerCase();
 
@@ -78,7 +80,8 @@ public class MagnesiumScript {
      * @throws Expression.InvalidExpressionSyntax Occurs when a syntactic error is detected
      */
     public Program interpret(Map<String, Object> script) throws Parser.InvalidExpressionType,
-                                                             Expression.InvalidExpressionSyntax {
+                                                                Expression.InvalidExpressionSyntax,
+                                                                Break.StopIterationException {
         // Parse program
         Parser parser = new Parser(script);
         Program program = parser.parse(driver);
@@ -100,7 +103,8 @@ public class MagnesiumScript {
                                                   IOException,
                                                   Parser.InvalidExpressionType,
                                                   ParseException,
-                                                  Expression.InvalidExpressionSyntax {
+                                                  Expression.InvalidExpressionSyntax,
+                                                  Break.StopIterationException {
         parser.addArgument("-f", "--file")
               .dest("filePath")
               .type(String.class)

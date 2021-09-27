@@ -1,36 +1,34 @@
 version: magnesium
 
 run:
-  - get: https://www.aetnamedicare.com/en/prescription-drugs/check-medicare-drug-list.html
+  - get: https://www.aetna.com/health-care-professionals/clinical-policy-bulletins/pharmacy-clinical-policy-bulletins.html
 
-  - wait: 4
+  - wait: 10
     until: element-clickable
-    locator-type: class
-    locator: getDrugInfoBtn
+    locator-type: id
+    locator: new_form_YearSelect
+
+  - select: '2021'
+    by: value
+    locator-type: id
+    locator: new_form_YearSelect
+
+  - send-keys: "a"
+    locator-type: id
+    locator: new_form_query
 
   - click: element
     locator-type: class
-    locator: getDrugInfoBtn
+    locator: form_button_submit
 
-  - select: "Oregon"
-    by: text
-    locator-type: id
-    locator: content_section_findadrug_drugComponentContainerLeft_xmlfilter_filtergroup-state
+  - do:
+      - click: element
+        locator-type: css
+        locator: '.next > a'
 
-  - wait: 1
-    until: true
-
-  - select: "Multnomah"
-    by: text
-    locator-type: id
-    locator: content_section_findadrug_drugComponentContainerLeft_xmlfilter_filtergroup-county
-
-  - wait: 1
-    until: true
-
-  - select: "Aetna Medicare Choice Plan (PPO) - H9431-005"
-    by: text
-    locator-type: id
-    locator: content_section_findadrug_drugComponentContainerLeft_xmlfilter_filtergroup-plan-name
-
-  - snapshot: true
+      - break: true
+    while:
+      wait: 10
+      until: element-clickable
+      locator-type: css
+      locator: '.next > a'
