@@ -16,14 +16,14 @@ public class Get extends Expression {
     public Object execute() {
         LOG.debug("Sending browser to page: " + url.toString());
 
+        // Get the URL
         driver.get(url.toString());
         return null;
     }
 
     public Get parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
-        if(!tokens.containsKey("get")) {
-            throw new InvalidExpressionSyntax("get", "Must contain `get` field, specifying a valid URL!");
-        }
+        // Assert the required field
+        assertRequiredField("get", "get", String.class, tokens);
 
         String urlToken = tokens.get("get").toString();
 

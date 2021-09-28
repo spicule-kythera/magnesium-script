@@ -7,10 +7,8 @@ import org.openqa.selenium.WebDriver;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -31,6 +29,7 @@ public class DumpStack extends Expression {
 
         LOG.debug("Dumping stack with " + stack.size() + " snapshots!");
 
+        // Guarantee that the path the the output dir exists
         try{
             FileUtils.createParentDirectories(destination);
         } catch(IOException e) {
@@ -39,7 +38,7 @@ public class DumpStack extends Expression {
         }
 
         // Dump the stack to file contents
-        for(int i = 0; i < stack.size(); ++i) {
+        for(int i = 0; i <= stack.size(); ++i) {
             String htmlPage = stack.pop();
             String fileName = String.copyValueOf(this.fileName.toCharArray())
                                     .replace("{SERIAL_NUMBER}", String.valueOf(i));
@@ -61,9 +60,7 @@ public class DumpStack extends Expression {
 
     public DumpStack parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required and optional fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("dump-stack", String.class);
-        assertRequiredFields("dump-stack", requiredFields, tokens);
+        assertRequiredField("dump-stack", "dump-stack", String.class, tokens);
         boolean hasTag = assertOptionalField("tag-name", String.class, tokens);
 
         // Process output

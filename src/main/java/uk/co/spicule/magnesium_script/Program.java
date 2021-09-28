@@ -7,10 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.expressions.*;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Program {
     // Static things
@@ -43,9 +40,13 @@ public class Program {
 
             // Post-execution phase
             if(operation instanceof Subroutine) {
-                snapshots.addAll(((Subroutine) operation).getFlatStack());
-                LOG.debug("Currying subroutine! " + snapshots.size() + " items in stack!");
+                String className = Expression.classPathToSlugName(operation).toUpperCase();
+                List<String> subSnapshots = ((Subroutine) operation).getFlatStack();
+
+                LOG.debug("Adding " + subSnapshots.size() + " snapshots from " + className + "-BLOCK to stack with " + snapshots.size() + " items!");
+                snapshots.addAll(subSnapshots);
             } else if(operation instanceof Snapshot) {
+                LOG.debug("Adding 1 snapshot to stack with " + snapshots.size() + " items!");
                 snapshots.add((String) response);
             }
         }

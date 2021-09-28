@@ -50,7 +50,7 @@ public class Alert extends Expression {
     // Assert the required and optional fields
     HashMap<String, Type> requiredFields = new HashMap<>();
     requiredFields.put("alert", String.class);
-    assertRequiredFields("wait", requiredFields, tokens);
+    assertRequiredFields("alert", requiredFields, tokens);
     boolean hasTimeout = assertOptionalField("timeout", Integer.class, tokens);
 
     // Populate timeout if it exists

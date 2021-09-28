@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Sandbox {
-    public static void main(String[] args) throws InterruptedException {
-                List<String> options = Arrays.asList("", "");
+    public static void main(String[] args) {
+        // Setup the driver
+        List<String> options = Arrays.asList("", "");
         FirefoxOptions driverOptions = new FirefoxOptions();
         options.forEach(driverOptions::addArguments);
         FirefoxDriver driver = new FirefoxDriver(driverOptions);
@@ -19,6 +20,7 @@ public class Sandbox {
         // Set logging level to debug
         System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "Debug");
 
+        // Set up the interpreter
         MagnesiumScript interpreter = new MagnesiumScript(driver);
         URL scriptPath = MagnesiumScript.class.getClassLoader().getResource("sandbox.yaml");
         try {

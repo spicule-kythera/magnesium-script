@@ -104,6 +104,11 @@ abstract public class Expression {
     }
   }
 
+  public static String classPathToSlugName(Object e) {
+    String[] parts = e.getClass().toString().split("\\.");
+    return parts[parts.length - 1].toLowerCase();
+  }
+
   protected void guardedSleep(long time) {
     try {
       Thread.sleep(time);

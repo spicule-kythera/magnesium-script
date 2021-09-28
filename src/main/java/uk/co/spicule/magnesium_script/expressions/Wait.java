@@ -60,11 +60,7 @@ public class Wait extends Expression {
     public Object execute() {
         LOG.debug("Waiting up to " + timeout + "s for " + type + " until: (" + condition + ")");
 
-        if(type == WaitType.PAGE_LOADS){
-            return new WebDriverWait(driver, timeout).until(condition).equals("complete");
-        } else {
-            return new WebDriverWait(driver, timeout).until(condition);
-        }
+        return new WebDriverWait(driver, timeout).until(condition);
     }
 
     public Wait parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
@@ -89,7 +85,7 @@ public class Wait extends Expression {
             case ELEMENT_CLICKABLE:
                 return parseWaitUntilElementClickable(tokens);
             case PAGE_LOADS:
-                return parseWaitUntilPageLoads(tokens);
+                return parseWaitUntilPageLoads();
             case TRUE:
                 return parseWaitUntilTrue();
             case FALSE:
@@ -132,12 +128,14 @@ public class Wait extends Expression {
         return this;
     }
 
-    private Wait parseWaitUntilPageLoads(Map<String, Object> tokens) {
+    private Wait parseWaitUntilPageLoads() {
+        // JS to run
+        String js = "function sleep(delay){return new Promise(resolve => setTimeout(resolve, delay))};" +
+        "while(document.readyState != 'complete') {sleep(250)};" +
+        "return document.readyState;";
+
         // Create the necessary wait object
-        condition = ExpectedConditions.jsReturnsValue("return document.readyState");
-//        condition = (driver) -> ((JavascriptExecutor) driver).executeScript("return document.readyState")
-//                                                             .toString()
-//                                                             .equals("complete");
+        condition =  ExpectedConditions.jsReturnsValue(js);
 
         return this;
     }

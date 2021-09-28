@@ -22,7 +22,7 @@ public class Try extends Expression implements Subroutine {
         try {
             tryBlock.run();
         } catch (Exception e) {
-            String slugName = exceptionToSlugName(e); // Convert the whole exception name to just the slug
+            String slugName = Expression.classPathToSlugName(e); // Convert the whole exception name to just the slug
 
             // Run the exception handler iff it's found in the catch block.
             if(catchBlocks.containsKey(slugName)) {
@@ -68,11 +68,6 @@ public class Try extends Expression implements Subroutine {
         }
 
         return this;
-    }
-
-    private static String exceptionToSlugName(Exception e) {
-        String[] parts = e.getClass().toString().split("\\.");
-        return parts[parts.length - 1].toLowerCase();
     }
 
     public List<String> getFlatStack() {
