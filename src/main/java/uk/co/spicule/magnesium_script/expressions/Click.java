@@ -1,10 +1,10 @@
 package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,50 +13,65 @@ public class Click extends Expression {
         ELEMENT,
         JS;
 
-        protected static ClickType stringToEnum(String name) throws InvalidExpressionSyntax {
+        private static ClickType stringToEnum(String name) throws InvalidExpressionSyntax {
             return ClickType.valueOf(Expression.validateTypeClass(ClickType.class, name));
         }
     }
 
     ClickType type = ClickType.ELEMENT;
     By locator = null;
+    WebElement variableLocator = null;
+    int index = 0;
     Integer timeout = null;
+    Wait wait = null;
 
     public Click(WebDriver driver, Expression parent) {
         super(driver, parent);
     }
 
-    public Click(WebDriver driver, Expression parent, ClickType type, By locator) {
-        super(driver, parent);
-        this.type = type;
-        this.locator = locator;
-    }
-
     public Object execute() {
         // Wait for the element to be clickable
-        new Wait(driver, this, Wait.WaitType.ELEMENT_CLICKABLE, locator, timeout).execute();
+        wait.execute();
 
-        // Find the element
-        WebElement element = driver.findElement(locator);
+        // Fetch the element
+        WebElement element;
+        if(locator != null){
+            element = driver.findElements(locator).get(index);
+        } else {
+            element = this.variableLocator;
+        }
+
+        // Scrolls element into view before clicking
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
 
         switch (type) {
             case ELEMENT:
                 element.click();
                 break;
             case JS:
-                throw new RuntimeException("js-click is not yet available!");
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+                break;
+            default:
+                throw new RuntimeException("FATAL: Invalid click-type: " + type);
         }
 
         return null;
     }
 
+    public Click parse(ClickType type, String locatorType, String locator) throws InvalidExpressionSyntax {
+        Map<String, Object> tokens = new HashMap<>();
+        tokens.put("click", type.toString());
+        tokens.put("locator-type", locatorType);
+        tokens.put("locator", locator);
+
+        return parse(tokens);
+    }
+
     public Click parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("click", String.class);
-        requiredFields.put("locator-type", String.class);
-        requiredFields.put("locator", String.class);
-        assertRequiredFields("click", requiredFields, tokens);
+        assertRequiredField("click", String.class, tokens);
+        assertRequiredField("locator-type", String.class, tokens);
+        assertRequiredField("locator", String.class, tokens);
 
         // Assert optional fields
         boolean hasTimeout = assertOptionalField("timeout", Integer.class, tokens);
@@ -64,11 +79,30 @@ public class Click extends Expression {
             timeout = Integer.parseInt(tokens.get("timeout").toString());
         }
 
+        boolean hasIndex = assertOptionalField("index", Integer.class, tokens);
+        if(hasIndex) {
+            this.index = Integer.parseInt(tokens.get("index").toString());
+        }
+
         // Click type
         type = ClickType.stringToEnum(tokens.get("click").toString());
 
-        // Get the locator
-        locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        // Get the locator type and subsequent clickable pieces
+        String locatorType = tokens.get("locator-type").toString().toLowerCase();
+        String locator = tokens.get("locator").toString();
+
+        // Populate the locator
+        switch(locatorType){
+            case "variable":
+                String variableName = locator.substring(1, locator.length() - 1);
+                this.variableLocator = (WebElement) resolveVariableName(variableName);
+                break;
+            default:
+                this.locator = (By) by(locatorType, locator);
+        }
+
+        // Populate wait
+        wait = new Wait(driver, this).parse(Wait.WaitType.ELEMENT_CLICKABLE, locatorType, locator);
 
         return this;
     }

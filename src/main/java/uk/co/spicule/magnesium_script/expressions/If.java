@@ -4,9 +4,12 @@ import org.openqa.selenium.WebDriver;
 import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
 
-import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class If extends ConditionalExpression implements Subroutine {
     Program thenBlock = null;
     Program elseBlock = null;
@@ -28,10 +31,8 @@ public class If extends ConditionalExpression implements Subroutine {
 
     public If parse(Map<String, Object> tokens) throws InvalidExpressionSyntax, Parser.InvalidExpressionType {
         // Assert the required fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("if", LinkedHashMap.class);
-        requiredFields.put("then", ArrayList.class);
-        assertRequiredFields("if", requiredFields, tokens);
+        assertRequiredField("if", LinkedHashMap.class, tokens);
+        assertRequiredField("then", ArrayList.class, tokens);
 
         // Assert optional fields
         boolean hasElse = assertOptionalField("else", ArrayList.class, tokens);
@@ -43,17 +44,16 @@ public class If extends ConditionalExpression implements Subroutine {
         Parser subParser = new Parser(null);
 
         // Populate the then/else blocks
-        thenBlock = subParser.parse(driver, (ArrayList) tokens.get("then"), this);
+        thenBlock = subParser.parse(driver, (ArrayList<Map<String, Object>>) tokens.get("then"), this);
         if(hasElse){
-            elseBlock = subParser.parse(driver, (ArrayList) tokens.get("else"), this);
+            elseBlock = subParser.parse(driver, (ArrayList<Map<String, Object>>) tokens.get("else"), this);
         }
 
         return this;
     }
 
     public List<String> getFlatStack() {
-        ArrayList<String> stack = new ArrayList<>();
-        stack.addAll(thenBlock.getSnapshots());
+        ArrayList<String> stack = new ArrayList<>(thenBlock.getSnapshots());
         if(elseBlock != null) {
             stack.addAll(elseBlock.getSnapshots());
         }

@@ -5,7 +5,7 @@ import org.openqa.selenium.WebDriver;
 import java.util.Map;
 
 public class Break extends Expression {
-    public class StopIterationException extends Exception {
+    public static class StopIterationException extends Exception {
         public StopIterationException() {
             super("FATAL: A break operation was called and uncaught by an iterator!");
         }

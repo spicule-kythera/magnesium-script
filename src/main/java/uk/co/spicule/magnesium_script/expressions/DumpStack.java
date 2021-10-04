@@ -1,7 +1,5 @@
 package uk.co.spicule.magnesium_script.expressions;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
 
@@ -23,13 +21,13 @@ public class DumpStack extends Expression {
     }
 
     public Object execute() {
-        // Setup the destination path
+        // Set up the destination path
         Path outputDir = Paths.get(this.outputDir.replaceFirst("~", System.getProperty("user.home")));
         File destination = new File(outputDir.toAbsolutePath().toString());
 
         LOG.debug("Dumping stack with " + stack.size() + " snapshots!");
 
-        // Guarantee that the path the the output dir exists
+        // Guarantee that the output dir exists
         try{
             FileUtils.createParentDirectories(destination);
         } catch(IOException e) {
@@ -51,7 +49,6 @@ public class DumpStack extends Expression {
             } catch (IOException e) {
                 LOG.error("Failed to dump stack item #" + i + ":");
                 e.printStackTrace();
-                continue;
             }
         }
 
@@ -60,7 +57,7 @@ public class DumpStack extends Expression {
 
     public DumpStack parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required and optional fields
-        assertRequiredField("dump-stack", "dump-stack", String.class, tokens);
+        assertRequiredField("dump-stack", String.class, tokens);
         boolean hasTag = assertOptionalField("tag-name", String.class, tokens);
 
         // Process output
@@ -76,14 +73,12 @@ public class DumpStack extends Expression {
         return this;
     }
 
-    @Setter
     public void setStack(List<String> stack) {
         for(String item : stack) {
             this.stack.push(item);
         }
     }
 
-    @Getter
     public final Stack<String> getStack() {
         return stack;
     }

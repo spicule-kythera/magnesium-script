@@ -1,12 +1,19 @@
 package uk.co.spicule.magnesium_script;
 
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.expressions.*;
 
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class Parser {
+  // Static things
+  public final static Logger LOG = LoggerFactory.getLogger(Parser.class);
+
+  // Instance things
   Map<String, Object> tokens;
 
   public static class InvalidExpressionType extends Exception {
@@ -42,38 +49,56 @@ public class Parser {
     for (Map<String, Object> instructionBlock : runBlock) {
       String instructionName = instructionBlock.keySet().toArray()[0].toString().replace("_", "-");
 
-      if (instructionName.equals("alert")) {
-        program.addInstruction(new Alert(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("break")) {
-        program.addInstruction(new Break(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("click")) {
-        program.addInstruction(new Click(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("do")) {
-        program.addInstruction(new DoWhile(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("dump-stack")) {
-        program.addInstruction(new DumpStack(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("for")) {
-        program.addInstruction(new For(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("get")) {
-        program.addInstruction(new Get(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("if")) {
-        program.addInstruction(new If(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("no-op")) {
-        program.addInstruction(new NoOp(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("select")) {
-        program.addInstruction(new Select(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("send-keys")) {
-        program.addInstruction(new SendKeys(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("screenshot")) {
-        program.addInstruction(new Screenshot(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("snapshot")) {
-        program.addInstruction(new Snapshot(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("try")) {
-        program.addInstruction(new Try(driver, parent).parse(instructionBlock));
-      } else if (instructionName.equals("wait")) {
-        program.addInstruction(new Wait(driver, parent).parse(instructionBlock));
-      } else {
-        throw new InvalidExpressionType(instructionName);
+      LOG.debug(instructionName + " -> " + instructionBlock);
+
+      switch (instructionName) {
+        case "alert":
+          program.addInstruction(new Alert(driver, parent).parse(instructionBlock));
+          break;
+        case "break":
+          program.addInstruction(new Break(driver, parent).parse(instructionBlock));
+          break;
+        case "click":
+          program.addInstruction(new Click(driver, parent).parse(instructionBlock));
+          break;
+        case "do":
+          program.addInstruction(new DoWhile(driver, parent).parse(instructionBlock));
+          break;
+        case "dump-stack":
+          program.addInstruction(new DumpStack(driver, parent).parse(instructionBlock));
+          break;
+        case "for":
+          program.addInstruction(new For(driver, parent).parse(instructionBlock));
+          break;
+        case "get":
+          program.addInstruction(new Get(driver, parent).parse(instructionBlock));
+          break;
+        case "if":
+          program.addInstruction(new If(driver, parent).parse(instructionBlock));
+          break;
+        case "no-op":
+          program.addInstruction(new NoOp(driver, parent).parse(instructionBlock));
+          break;
+        case "select":
+          program.addInstruction(new Select(driver, parent).parse(instructionBlock));
+          break;
+        case "send-keys":
+          program.addInstruction(new SendKeys(driver, parent).parse(instructionBlock));
+          break;
+        case "screenshot":
+          program.addInstruction(new Screenshot(driver, parent).parse(instructionBlock));
+          break;
+        case "snapshot":
+          program.addInstruction(new Snapshot(driver, parent).parse(instructionBlock));
+          break;
+        case "try":
+          program.addInstruction(new Try(driver, parent).parse(instructionBlock));
+          break;
+        case "wait":
+          program.addInstruction(new Wait(driver, parent).parse(instructionBlock));
+          break;
+        default:
+          throw new InvalidExpressionType(instructionName);
       }
     }
     return program;

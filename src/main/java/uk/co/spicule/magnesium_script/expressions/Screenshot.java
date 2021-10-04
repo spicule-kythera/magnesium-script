@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class Screenshot extends Expression {
     String outputDir = null;
     String fileName = "{SERIAL_NUMBER}-{TAG_NAME}.png";
@@ -26,13 +27,13 @@ public class Screenshot extends Expression {
 
         this.outputDir = outputDir;
         if(tagName == null) {
-            tagName = "-magnesium-script";
+            tagName = "magnesium-script";
         }
         fileName = fileName.replace("{TAG_NAME}", tagName);
     }
 
     public Object execute() {
-        // Setup the destination path
+        // Set up the destination path
         fileName = fileName.replace("{SERIAL_NUMBER}", String.valueOf(System.nanoTime()));
         Path outputDir = Paths.get(this.outputDir.replaceFirst("~", System.getProperty("user.home")));
         File destination = new File(outputDir.toAbsolutePath() + File.separator + fileName);
@@ -42,7 +43,9 @@ public class Screenshot extends Expression {
         // Take the screenshot
         TakesScreenshot camera = (TakesScreenshot) driver;
         File source = camera.getScreenshotAs(OutputType.FILE);
-        source.setReadable(true);
+        if(!source.setReadable(true)) {
+            throw new RuntimeException("Failed to make file readable:" + source);
+        }
 
         // Move the screenshot to the specified location
         try{
@@ -57,7 +60,7 @@ public class Screenshot extends Expression {
 
     public Screenshot parse(Map<String, Object> tokens) throws InvalidExpressionSyntax, Parser.InvalidExpressionType {
         // Assert the required and optional fields
-        assertRequiredField("screenshot", "screenshot", String.class, tokens);
+        assertRequiredField("screenshot", String.class, tokens);
         boolean hasTag = assertOptionalField("tag-name", String.class, tokens);
 
         // Process output

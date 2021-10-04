@@ -4,23 +4,16 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.*;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SendKeys extends Expression {
     enum InputType {
-        STRING,
-        SPECIAL;
-
-        protected static InputType stringToEnum(String name) throws InvalidExpressionSyntax {
-            return InputType.valueOf(Expression.validateTypeClass(InputType.class, name));
-        }
+        STRING, SPECIAL
     }
 
-    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z0-9_]+\\}");
+    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z]+[a-zA-Z\\-_]+}");
 
     By locator = null;
     InputType type = InputType.STRING;
@@ -54,11 +47,9 @@ public class SendKeys extends Expression {
                 element.sendKeys(specialKeys);
                 break;
             case STRING:
-                for (Character c : keys.toCharArray()) {
-                    element.sendKeys(c.toString());
-                    guardedSleep(inputRate);
-                }
-                break;
+                return subExecuteString();
+            default:
+                throw new RuntimeException("FATAL: Invalid input-type: " + type);
         }
 
         return null;
@@ -74,36 +65,57 @@ public class SendKeys extends Expression {
             case STRING:
                 for (Character c : keys.toCharArray()) {
                     alert.sendKeys(c.toString());
-                    guardedSleep(inputRate);
+                    Expression.guardedSleep(inputRate);
                 }
                 break;
+            default:
+                throw new RuntimeException("FATAL: Invalid input-type: " + type);
         }
 
         return null;
     }
 
-    /**
-     * Available special keys: https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
-     * @param tokens
-     * @return
-     * @throws InvalidExpressionSyntax
-     */
-    public SendKeys parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
-        // Assert the required and optional fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("send-keys", String.class);
-        requiredFields.put("locator-type", String.class);
-        requiredFields.put("locator", String.class);
-        assertRequiredFields("send-keys", requiredFields, tokens);
-        boolean hasInputRate = assertOptionalField("input-rate", Integer.class, tokens);
+    private Object subExecuteString() {
+        // Make a deep copy of the original input as not to change it
+        String keys = String.copyValueOf(this.keys.toCharArray());
 
-        // Populate the input rate if it exists
-        if(hasInputRate) {
+        // Inject the variable name
+        Matcher matcher = SPECIAL_CHARACTER_PATTERN.matcher(keys);
+        if(matcher.find()){
+            String variableName = keys.substring(1 + matcher.start(), matcher.end() - 1).replaceAll("-", "_");
+            Object value = resolveVariableName(variableName);
+            if(value != null){
+                LOG.debug("Injecting `" + value + "` into `" + keys + "`");
+                keys = keys.replaceAll("\\{" + variableName + "}", value.toString());
+                LOG.debug("New input: " + keys);
+            }
+        }
+
+        // Get the element
+        WebElement input = driver.findElement(locator);
+
+        // Send the keys
+        for(Character c: keys.toCharArray()) {
+            input.sendKeys(c.toString());
+            Expression.guardedSleep(inputRate);
+        }
+
+        return null;
+    }
+
+    public SendKeys parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
+        // Assert the required fields
+        assertRequiredField("send-keys", String.class, tokens);
+        assertRequiredField("locator-type", String.class, tokens);
+        assertRequiredField("locator", String.class, tokens);
+
+        // Populate optional fields
+        if(assertOptionalField("input-rate", Integer.class, tokens)) {
             inputRate = Long.parseLong(tokens.get("input-rate").toString());
         }
 
         // Populate the locator
-        locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        locator = (By) by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
 
         // Populate the raw keys input
         keys = tokens.get("send-keys").toString();

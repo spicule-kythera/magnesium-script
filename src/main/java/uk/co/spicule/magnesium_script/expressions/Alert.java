@@ -2,10 +2,7 @@ package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.WebDriver;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
-
 
 public class Alert extends Expression {
   enum AlertAction {
@@ -13,15 +10,19 @@ public class Alert extends Expression {
     DISMISS,
     SEND_KEYS;
 
-    protected static AlertAction stringToEnum(String name) throws InvalidExpressionSyntax {
+    private static AlertAction stringToEnum(String name) throws InvalidExpressionSyntax {
       return AlertAction.valueOf(Expression.validateTypeClass(AlertAction.class, name));
     }
   }
 
+  Wait wait = null;
   AlertAction action = null;
   SendKeys keys = null;
   Integer timeout = null;
 
+  public Alert() {
+    super(null, null);
+  }
 
   public Alert(WebDriver driver, Expression parent) {
     super(driver, parent);
@@ -31,30 +32,32 @@ public class Alert extends Expression {
     LOG.debug("Resolving expression: `" + this.getClass() + "`!");
 
     // Wait for an alert to appear and focus on it
-    new Wait(driver, this, Wait.WaitType.ALERT_EXISTS, null, timeout).execute();
+    wait.execute();
     org.openqa.selenium.Alert alert = driver.switchTo().alert();
 
     // Perform the action
     switch(action) {
       case ACCEPT:
         alert.accept();
+        break;
       case DISMISS:
         alert.dismiss();
+        break;
       case SEND_KEYS:
         keys.execute(alert);
+        break;
+      default:
+        throw new RuntimeException("FATAL: Invalid alert-action: " + action);
     }
     return null;
   }
 
   public Alert parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
     // Assert the required and optional fields
-    HashMap<String, Type> requiredFields = new HashMap<>();
-    requiredFields.put("alert", String.class);
-    assertRequiredFields("alert", requiredFields, tokens);
-    boolean hasTimeout = assertOptionalField("timeout", Integer.class, tokens);
+    assertRequiredField("alert", String.class, tokens);
 
     // Populate timeout if it exists
-    if(hasTimeout) {
+    if(assertOptionalField("timeout", Integer.class, tokens)) {
       timeout = Integer.parseInt(tokens.get("timeout").toString());
     }
 
@@ -70,14 +73,15 @@ public class Alert extends Expression {
       parseSendKeys(tokens);
     }
 
+    // Populate wait
+    wait = new Wait(driver, this).parse(Wait.WaitType.ALERT_EXISTS, timeout);
+
     return this;
   }
 
   private void parseSendKeys(Map<String, Object> tokens) throws InvalidExpressionSyntax {
     // Assert the required and optional fields
-    HashMap<String, Type> requiredFields = new HashMap<>();
-    requiredFields.put("send-keys", String.class);
-    assertRequiredFields("alert-send-keys", requiredFields, tokens);
+    assertRequiredField("send-keys", String.class, tokens);
 
     keys = new SendKeys(driver, this, tokens.get("send-keys").toString(), null);
   }
