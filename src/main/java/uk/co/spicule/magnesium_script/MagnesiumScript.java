@@ -34,15 +34,24 @@ public class MagnesiumScript {
         }
     }
 
+    // Static things
     private static WebDriver driver = null;
     public final static Logger LOG = LoggerFactory.getLogger(MagnesiumScript.class);
     static ArgumentParser parser = ArgumentParsers.newFor("MagnesiumScript").build()
             .description("A Domain-Specific-Language for creating expressive and simple automation scripts " +
                          "for Selenium-based web-agents.")
             .defaultHelp(true);
+    private static final int MAJOR = 0;
+    private static final int MINOR = 1;
+    private static final int PATCH = 5;
 
     public MagnesiumScript(WebDriver driver) {
+        LOG.info(version());
         MagnesiumScript.driver = driver;
+    }
+
+    public static final String version() {
+        return "MagnesiumScript v" + MAJOR + "." + MINOR + "." + PATCH;
     }
 
     /**
