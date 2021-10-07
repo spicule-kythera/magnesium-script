@@ -43,7 +43,7 @@ public class MagnesiumScript {
             .defaultHelp(true);
     private static final int MAJOR = 0;
     private static final int MINOR = 1;
-    private static final int PATCH = 5;
+    private static final int PATCH = 6;
 
     public MagnesiumScript(WebDriver driver) {
         LOG.info(version());

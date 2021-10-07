@@ -10,7 +10,7 @@
     <url>https://github.com/spicule-kythera/magnesium-script</url>
     <groupId>uk.co.spicule</groupId>
     <artifactId>magnesium-script</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
 
     <!-- License -->
     <licenses>
@@ -225,6 +225,16 @@
             <artifactId>nashorn-core</artifactId>
             <version>15.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.0.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+        </dependency>
 
         <!-- Development Dependencies -->
         <dependency>
@@ -250,11 +260,6 @@
             <artifactId>sisu-guice</artifactId>
             <version>4.2.0</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>[2.7,)</version>
         </dependency>
     </dependencies>
 </project>
