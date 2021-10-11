@@ -42,8 +42,6 @@ abstract public class Expression {
     this.parent = parent;
   }
 
-
-
   abstract public @Nullable Object execute() throws Break.StopIterationException;
 
   abstract public Expression parse(Map<String, Object> tokens)
