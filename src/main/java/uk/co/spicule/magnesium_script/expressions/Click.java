@@ -3,6 +3,7 @@ package uk.co.spicule.magnesium_script.expressions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -38,13 +39,19 @@ public class Click extends Expression {
 
         // Find the element
         WebElement element = driver.findElement(locator);
+        
+        //Scrolls element into view before clicking
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
 
         switch (type) {
             case ELEMENT:
                 element.click();
                 break;
             case JS:
-                throw new RuntimeException("js-click is not yet available!");
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+                break;
+            default:
+                throw new RuntimeException("Click type not available!");
         }
 
         return null;
