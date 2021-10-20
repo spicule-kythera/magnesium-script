@@ -9,6 +9,7 @@ import uk.co.spicule.magnesium_script.expressions.*;
 import javax.annotation.Nullable;
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class Program {
     // Static things
     protected static Logger LOG = LoggerFactory.getLogger(Program.class);
@@ -54,15 +55,9 @@ public class Program {
         return this;
     }
 
-    protected boolean addInstruction(Expression instruction) {
-        try{
-            instruction.setParent(parent);
-            program.add(instruction);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    protected void addInstruction(Expression instruction) {
+        instruction.setParent(parent);
+        program.add(instruction);
     }
 
     public String toString() {

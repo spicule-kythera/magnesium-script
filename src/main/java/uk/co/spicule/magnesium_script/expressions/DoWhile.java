@@ -4,9 +4,12 @@ import org.openqa.selenium.WebDriver;
 import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
 
-import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class DoWhile extends ConditionalExpression implements Subroutine {
     Program doBlock = null;
 
@@ -30,10 +33,8 @@ public class DoWhile extends ConditionalExpression implements Subroutine {
 
     public DoWhile parse(Map<String, Object> tokens) throws InvalidExpressionSyntax, Parser.InvalidExpressionType {
         // Assert the required fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("do", ArrayList.class);
-        requiredFields.put("while", LinkedHashMap.class);
-        assertRequiredFields("if", requiredFields, tokens);
+        assertRequiredField("do", ArrayList.class, tokens);
+        assertRequiredField("while", LinkedHashMap.class, tokens);
 
         // Populate the condition as a wait-block
         condition = new Wait(driver, this).parse((Map<String, Object>) tokens.get("while"));
@@ -42,14 +43,12 @@ public class DoWhile extends ConditionalExpression implements Subroutine {
         Parser subParser = new Parser(null);
 
         // Populate the do block
-        doBlock = subParser.parse(driver, (ArrayList) tokens.get("do"), this);
+        doBlock = subParser.parse(driver, (ArrayList<Map<String, Object>>) tokens.get("do"), this);
 
         return this;
     }
 
     public List<String> getFlatStack() {
-        ArrayList<String> stack = new ArrayList<>();
-        stack.addAll(doBlock.getSnapshots());
-        return stack;
+        return new ArrayList<>(doBlock.getSnapshots());
     }
 }

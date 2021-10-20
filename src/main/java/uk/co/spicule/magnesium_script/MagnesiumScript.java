@@ -6,14 +6,11 @@ import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import org.json.simple.parser.ParseException;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.spicule.magnesium_script.DriverFactory.BrowserType;
 import uk.co.spicule.magnesium_script.expressions.Break;
 import uk.co.spicule.magnesium_script.expressions.Expression;
 
@@ -24,16 +21,6 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class MagnesiumScript {
-    enum BrowserType {
-        FIREFOX,
-        CHROME,
-        EDGE;
-
-        protected static BrowserType stringToEnum(String name) throws Expression.InvalidExpressionSyntax {
-            return BrowserType.valueOf(Expression.validateTypeClass(BrowserType.class, name));
-        }
-    }
-
     // Static things
     private static WebDriver driver = null;
     public final static Logger LOG = LoggerFactory.getLogger(MagnesiumScript.class);
@@ -50,7 +37,7 @@ public class MagnesiumScript {
         MagnesiumScript.driver = driver;
     }
 
-    public static final String version() {
+    public static String version() {
         return "MagnesiumScript v" + MAJOR + "." + MINOR + "." + PATCH;
     }
 
@@ -59,12 +46,10 @@ public class MagnesiumScript {
      *      type, then proceeds parse the contents iff no lexical errors occur.
      * @param filePath Path to the file to read
      * @throws IOException Occurs when the filePath was not found or could not be opened
-     * @throws ParseException Occurs when the file specified fails to parse to its primitive type (e.g. JSON or YAML syntax error)
      * @throws Parser.InvalidExpressionType Occurs when an unknown expression is detected
      * @throws Expression.InvalidExpressionSyntax Occurs when a syntactic error is detected
      */
     public Program interpret(Path filePath) throws IOException,
-                                                   ParseException,
                                                    Parser.InvalidExpressionType,
                                                    Expression.InvalidExpressionSyntax,
                                                    Break.StopIterationException {
@@ -97,19 +82,9 @@ public class MagnesiumScript {
         return program.run();
     }
 
-    /**
-     * The main method if running the JAR as an executable and not a library
-     * @param args arguments and options passed in from the command line
-     * @throws ArgumentParserException
-     * @throws IOException
-     * @throws Parser.InvalidExpressionType
-     * @throws ParseException
-     * @throws Expression.InvalidExpressionSyntax
-     */
     public static void main(String[] args) throws ArgumentParserException,
                                                   IOException,
                                                   Parser.InvalidExpressionType,
-                                                  ParseException,
                                                   Expression.InvalidExpressionSyntax,
                                                   Break.StopIterationException {
         parser.addArgument("-f", "--file")
@@ -128,29 +103,26 @@ public class MagnesiumScript {
               .setDefault("firefox")
               .choices(Arrays.asList("firefox", "chrome", "edge"))
               .help("Specify the Selenium driver type to use. (Default: firefox)");
+        parser.addArgument("-v", "--version")
+                .dest("version")
+                .type(Boolean.class)
+                .setDefault(false)
+                .help("Print the interpreter version then exit");
         WebDriver driver = null;
 
         try {
             // Get the Args
             Namespace parsedArgs = parser.parseArgs(args);
             BrowserType type = BrowserType.stringToEnum(parsedArgs.getString("driver"));
-            boolean isHeadless = parsedArgs.getBoolean("headless");
+            DriverFactory factory = new DriverFactory(parsedArgs.getBoolean("headless"));
 
-            // Set the driver headless mode
+            // Build the driver
+            driver = factory.build(type);
 
-            // Set up the driver
-            switch (type) {
-                case FIREFOX:
-                    driver = new FirefoxDriver();
-                    break;
-                case CHROME:
-                    driver = new ChromeDriver();
-                    break;
-                case EDGE:
-                    driver = new EdgeDriver();
-                    break;
-                default:
-                    throw new InvalidArgumentException("Internal error: unknown browser type `" + type + "`");
+            // Process version command
+            if(parsedArgs.getBoolean("version")) {
+                LOG.info(MagnesiumScript.version());
+                System.exit(0);
             }
 
             // Set up the interpreter
@@ -158,7 +130,8 @@ public class MagnesiumScript {
 
             // Parse and run the script
             Path filePath = FileSystems.getDefault().getPath(parsedArgs.getString("filePath"));
-            interpreter.interpret(filePath);
+            Program program = interpreter.interpret(filePath);
+            program.run();
         } catch (HelpScreenException e) {
             // Do nothing for help menu
         } finally {

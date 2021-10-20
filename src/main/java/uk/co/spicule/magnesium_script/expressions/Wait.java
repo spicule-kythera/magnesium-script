@@ -7,11 +7,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class Wait extends Expression {
     enum WaitType {
         ALERT_EXISTS,
@@ -22,7 +22,7 @@ public class Wait extends Expression {
         TRUE,
         FALSE;
 
-        protected static WaitType stringToEnum(String name) throws InvalidExpressionSyntax {
+        private static WaitType stringToEnum(String name) throws InvalidExpressionSyntax {
             return WaitType.valueOf(Expression.validateTypeClass(WaitType.class, name));
         }
     }
@@ -31,6 +31,10 @@ public class Wait extends Expression {
     long timeout = 30; // Wait-Timeout in seconds
     WaitType type = WaitType.TRUE;
     ExpectedCondition condition = null;
+
+    public Wait() {
+        super(null, null);
+    }
 
     public Wait(WebDriver driver, Expression parent) {
         super(driver, parent);
@@ -103,7 +107,7 @@ public class Wait extends Expression {
             case FALSE:
                 return parseWaitUntilFalse();
             default:
-                throw new InvalidExpressionSyntax("Invalid `wait` type: (`" + forToken+ "`: " + type + ")");
+                throw new InvalidExpressionSyntax("FATAL: Invalid wait-type: " + type);
         }
     }
 
@@ -114,10 +118,8 @@ public class Wait extends Expression {
 
     private Wait parseWaitUntilElementExists(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required and optional fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("locator-type", String.class);
-        requiredFields.put("locator", String.class);
-        assertRequiredFields("wait-forCondition: element-exits", requiredFields, tokens);
+        assertRequiredField("locator-type", String.class, tokens);
+        assertRequiredField("locator", String.class, tokens);
 
         // Create the necessary wait object
         By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
@@ -128,10 +130,8 @@ public class Wait extends Expression {
 
     private Wait parseWaitUntilElementVisible(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required and optional fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("locator-type", String.class);
-        requiredFields.put("locator", String.class);
-        assertRequiredFields("wait-forCondition: element-visible", requiredFields, tokens);
+        assertRequiredField("locator-type", String.class, tokens);
+        assertRequiredField("locator", String.class, tokens);
 
         // Create the necessary wait object
         By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
@@ -142,10 +142,8 @@ public class Wait extends Expression {
 
     private Wait parseWaitUntilElementClickable(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required and optional fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("locator-type", String.class);
-        requiredFields.put("locator", String.class);
-        assertRequiredFields("wait-forCondition: element-clickable", requiredFields, tokens);
+        assertRequiredField("locator-type", String.class, tokens);
+        assertRequiredField("locator", String.class, tokens);
 
         // Create the necessary wait object
         By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
@@ -167,7 +165,7 @@ public class Wait extends Expression {
     }
 
     private Wait parseWaitUntilTrue() {
-        condition = (driver) -> {
+        condition = (x) -> {
             try {
                 // Thread.sleep() takes time in ms so multiply value by 1000
                 Thread.sleep(timeout * 1000);
@@ -180,7 +178,7 @@ public class Wait extends Expression {
     }
 
     private Wait parseWaitUntilFalse() {
-        condition = (driver) -> true;
+        condition = (x) -> true;
         return this;
     }
 }
