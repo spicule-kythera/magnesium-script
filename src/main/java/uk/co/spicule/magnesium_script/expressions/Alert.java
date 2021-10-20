@@ -1,6 +1,7 @@
 package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.WebDriver;
+
 import java.util.Map;
 
 public class Alert extends Expression {
@@ -54,10 +55,9 @@ public class Alert extends Expression {
   public Alert parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
     // Assert the required and optional fields
     assertRequiredField("alert", String.class, tokens);
-    boolean hasTimeout = assertOptionalField("timeout", Integer.class, tokens);
 
     // Populate timeout if it exists
-    if(hasTimeout) {
+    if(assertOptionalField("timeout", Integer.class, tokens)) {
       timeout = Integer.parseInt(tokens.get("timeout").toString());
     }
 

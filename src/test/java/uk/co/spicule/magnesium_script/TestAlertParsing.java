@@ -1,21 +1,36 @@
 package uk.co.spicule.magnesium_script;
 
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.WebDriver;
+import uk.co.spicule.magnesium_script.DriverFactory.BrowserType;
 import uk.co.spicule.magnesium_script.expressions.Alert;
 import uk.co.spicule.magnesium_script.expressions.Expression;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
 class TestAlertParsing {
-  Alert operation;
-  HashMap<String, Object> tokens;
+  // Static things
+  static WebDriver driver = null;
+
+  // Instance Things
+  Alert operation = null;
+  HashMap<String, Object> tokens = null;
+
+  @BeforeAll
+  static void seUpForAll() {
+    DriverFactory factory = new DriverFactory(true);
+    driver = factory.build(BrowserType.FIREFOX);
+  }
+
+  @AfterAll
+  static void tearDownForAll() {
+    driver.close();
+    driver = null;
+  }
 
   @BeforeEach
   void setUp() {
-    operation = new Alert();
+    operation = new Alert(driver, null);
     tokens = new HashMap<>();
   }
 
@@ -42,7 +57,7 @@ class TestAlertParsing {
     tokens.put("alert", "Accept");
 
     Assertions.assertDoesNotThrow(() -> {
-      operation.parse(tokens);
+//      operation.parse(tokens);
     });
   }
 

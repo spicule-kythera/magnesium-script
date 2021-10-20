@@ -62,7 +62,7 @@ public class TestExpressionClassUtilities {
 
     @Test
     void enumerationValidatesWithGoodValues() {
-        Class enumeration = MagnesiumScript.BrowserType.class;
+        Class enumeration = DriverFactory.BrowserType.class;
         List<String> values = Arrays.asList("firefox", "FIREFOX");
 
         for(String value : values) {
@@ -74,7 +74,7 @@ public class TestExpressionClassUtilities {
 
     @Test
     void enumerationDoesNotValidateWithBadValues() {
-        Class enumeration = MagnesiumScript.BrowserType.class;
+        Class enumeration = DriverFactory.BrowserType.class;
         List<String> values = Arrays.asList("asdf", "ASDF", "{}213njwsd123^&@!#(");
 
         for(String value : values) {
@@ -82,5 +82,10 @@ public class TestExpressionClassUtilities {
                 Expression.validateTypeClass(enumeration, value);
             });
         }
+    }
+
+    @Test
+    void requiredFieldValidatesWithGoodType() {
+
     }
 }

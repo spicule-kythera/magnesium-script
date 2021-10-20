@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Sandbox {
     public static void main(String[] args) {
-        // Setup the driver
+        // Set up the driver
         List<String> options = Arrays.asList("", "");
         FirefoxOptions driverOptions = new FirefoxOptions();
         options.forEach(driverOptions::addArguments);

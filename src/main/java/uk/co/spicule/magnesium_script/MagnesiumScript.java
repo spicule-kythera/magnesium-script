@@ -8,11 +8,9 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.spicule.magnesium_script.DriverFactory.BrowserType;
 import uk.co.spicule.magnesium_script.expressions.Break;
 import uk.co.spicule.magnesium_script.expressions.Expression;
 
@@ -23,16 +21,6 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class MagnesiumScript {
-    enum BrowserType {
-        FIREFOX,
-        CHROME,
-        EDGE;
-
-        private static BrowserType stringToEnum(String name) throws Expression.InvalidExpressionSyntax {
-            return BrowserType.valueOf(Expression.validateTypeClass(BrowserType.class, name));
-        }
-    }
-
     // Static things
     private static WebDriver driver = null;
     public final static Logger LOG = LoggerFactory.getLogger(MagnesiumScript.class);
@@ -126,29 +114,15 @@ public class MagnesiumScript {
             // Get the Args
             Namespace parsedArgs = parser.parseArgs(args);
             BrowserType type = BrowserType.stringToEnum(parsedArgs.getString("driver"));
+            DriverFactory factory = new DriverFactory(parsedArgs.getBoolean("headless"));
+
+            // Build the driver
+            driver = factory.build(type);
 
             // Process version command
             if(parsedArgs.getBoolean("version")) {
                 LOG.info(MagnesiumScript.version());
                 System.exit(0);
-            }
-
-            /* Set the driver headless mode
-            boolean isHeadless = parsedArgs.getBoolean("headless");*/
-
-            // Set up the driver
-            switch (type) {
-                case FIREFOX:
-                    driver = new FirefoxDriver();
-                    break;
-                case CHROME:
-                    driver = new ChromeDriver();
-                    break;
-                case EDGE:
-                    driver = new EdgeDriver();
-                    break;
-                default:
-                    throw new InvalidArgumentException("Internal error: unknown browser type `" + type + "`");
             }
 
             // Set up the interpreter

@@ -109,7 +109,7 @@ abstract public class Expression {
     throw new InvalidExpressionSyntax("Invalid type `" + value + "` for " + enumeration.getName() + "! Value must be one of the following: " + constants);
   }
 
-  protected void assertRequiredField(String fieldName, Type fieldType, Map<String, Object> tokens) throws InvalidExpressionSyntax {
+  protected static void assertRequiredField(String fieldName, Type fieldType, Map<String, Object> tokens) throws InvalidExpressionSyntax {
     if(!tokens.containsKey(fieldName)) {
       throw new InvalidExpressionSyntax("Expected `" + fieldName + "` in: " + tokens);
     }
@@ -120,7 +120,7 @@ abstract public class Expression {
     }
   }
 
-  protected void assertRequiredMultiTypeField(String fieldName, List<Type> types, Map<String, Object> tokens) throws InvalidExpressionSyntax {
+  protected static void assertRequiredMultiTypeField(String fieldName, List<Type> types, Map<String, Object> tokens) throws InvalidExpressionSyntax {
     boolean matchedType = false;
     Object name = tokens.get(fieldName);
     if(name == null) {
@@ -144,7 +144,7 @@ abstract public class Expression {
     }
   }
 
-  protected boolean assertOptionalField(String fieldName, Type fieldType, Map<String, Object> tokens) throws InvalidExpressionSyntax {
+  protected static boolean assertOptionalField(String fieldName, Type fieldType, Map<String, Object> tokens) throws InvalidExpressionSyntax {
     if(tokens.containsKey(fieldName)) {
       Type tokenType = tokens.get(fieldName).getClass();
       if(fieldType != tokenType) {
