@@ -4,9 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Select extends Expression {
@@ -15,7 +13,7 @@ public class Select extends Expression {
         TEXT,
         VALUE;
 
-        protected static SelectType stringToEnum(String name) throws InvalidExpressionSyntax {
+        private static SelectType stringToEnum(String name) throws InvalidExpressionSyntax {
             return SelectType.valueOf(Expression.validateTypeClass(SelectType.class, name));
         }
     }
@@ -57,11 +55,9 @@ public class Select extends Expression {
 
     public Select parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("select", String.class);
-        requiredFields.put("locator-type", String.class);
-        requiredFields.put("locator", String.class);
-        assertRequiredFields("select", requiredFields, tokens);
+        assertRequiredField("select", String.class, tokens);
+        assertRequiredField("locator-type", String.class, tokens);
+        assertRequiredField("locator", String.class, tokens);
         assertRequiredMultiTypeField("by", Arrays.asList(String.class, Integer.class), tokens);
 
         // Populate the locator

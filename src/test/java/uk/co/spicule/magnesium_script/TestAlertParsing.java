@@ -15,7 +15,7 @@ class TestAlertParsing {
 
   @BeforeEach
   void setUp() {
-    operation = new Alert(null, null);
+    operation = new Alert();
     tokens = new HashMap<>();
   }
 
@@ -27,18 +27,14 @@ class TestAlertParsing {
 
   @Test
   void noAlert() {
-    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-      operation.parse(tokens);
-    });
+    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> operation.parse(tokens));
   }
 
   @Test
   void invalidAlertType() {
     tokens.put("alert", "non-existant alert-type");
 
-    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-      operation.parse(tokens);
-    });
+    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> operation.parse(tokens));
   }
 
   @Test
@@ -55,9 +51,7 @@ class TestAlertParsing {
     tokens.put("alert", "accept");
     tokens.put("timeout", 10.1);
 
-    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> {
-      operation.parse(tokens);
-    });
+    Assertions.assertThrows(Expression.InvalidExpressionSyntax.class, () -> operation.parse(tokens));
   }
 
   @Test

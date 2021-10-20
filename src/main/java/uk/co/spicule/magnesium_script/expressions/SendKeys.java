@@ -4,23 +4,16 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.*;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SendKeys extends Expression {
     enum InputType {
-        STRING,
-        SPECIAL;
-
-        protected static InputType stringToEnum(String name) throws InvalidExpressionSyntax {
-            return InputType.valueOf(Expression.validateTypeClass(InputType.class, name));
-        }
+        STRING, SPECIAL
     }
 
-    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z0-9_]+\\}");
+    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z0-9_]+}");
 
     By locator = null;
     InputType type = InputType.STRING;
@@ -56,7 +49,7 @@ public class SendKeys extends Expression {
             case STRING:
                 for (Character c : keys.toCharArray()) {
                     element.sendKeys(c.toString());
-                    guardedSleep(inputRate);
+                    Expression.guardedSleep(inputRate);
                 }
                 break;
             default:
@@ -76,7 +69,7 @@ public class SendKeys extends Expression {
             case STRING:
                 for (Character c : keys.toCharArray()) {
                     alert.sendKeys(c.toString());
-                    guardedSleep(inputRate);
+                    Expression.guardedSleep(inputRate);
                 }
                 break;
             default:
@@ -86,23 +79,14 @@ public class SendKeys extends Expression {
         return null;
     }
 
-    /**
-     * Available special keys: https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
-     * @param tokens
-     * @return
-     * @throws InvalidExpressionSyntax
-     */
     public SendKeys parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
-        // Assert the required and optional fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("send-keys", String.class);
-        requiredFields.put("locator-type", String.class);
-        requiredFields.put("locator", String.class);
-        assertRequiredFields("send-keys", requiredFields, tokens);
-        boolean hasInputRate = assertOptionalField("input-rate", Integer.class, tokens);
+        // Assert the required fields
+        assertRequiredField("send-keys", String.class, tokens);
+        assertRequiredField("locator-type", String.class, tokens);
+        assertRequiredField("locator", String.class, tokens);
 
-        // Populate the input rate if it exists
-        if(hasInputRate) {
+        // Populate optional fields
+        if(assertOptionalField("input-rate", Integer.class, tokens)) {
             inputRate = Long.parseLong(tokens.get("input-rate").toString());
         }
 

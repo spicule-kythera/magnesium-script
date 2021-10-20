@@ -23,7 +23,7 @@ public class Get extends Expression {
 
     public Get parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required field
-        assertRequiredField("get", "get", String.class, tokens);
+        assertRequiredField("get", String.class, tokens);
 
         String urlToken = tokens.get("get").toString();
 

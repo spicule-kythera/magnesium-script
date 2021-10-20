@@ -5,18 +5,18 @@ import org.openqa.selenium.WebElement;
 import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class For extends Expression implements Subroutine {
     enum Condition {
         EACH,
         ITERATOR;
 
-        protected static Condition stringToEnum(String name) throws InvalidExpressionSyntax {
+        private static Condition stringToEnum(String name) throws InvalidExpressionSyntax {
             return Condition.valueOf(Expression.validateTypeClass(Condition.class, name));
         }
     }
@@ -37,7 +37,7 @@ public class For extends Expression implements Subroutine {
                 case EACH:
                     return subExecuteForEach(condition);
                 case ITERATOR:
-                    return subExecuteForIterator(condition);
+                    return null;
                 default:
                     throw new RuntimeException("FATAL: Invalid condition-type: " + conditionType);
             }
@@ -45,6 +45,7 @@ public class For extends Expression implements Subroutine {
             // Do nothing
             LOG.warn("Exiting for expression due to break!");
         }
+
         return null;
     }
 
@@ -58,29 +59,20 @@ public class For extends Expression implements Subroutine {
         return null;
     }
 
-    private Object subExecuteForIterator(Map<String, Object> tokens) {
-        // TODO: fill
-        return null;
-    }
-
     public For parse(Map<String, Object> tokens) throws InvalidExpressionSyntax,
                                                         Parser.InvalidExpressionType {
-        // Check for required fields
-        Map<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("for", Map.class);
-        requiredFields.put("do", List.class);
-        assertRequiredFields("for", requiredFields, tokens);
+        // Assert the required fields
+        assertRequiredField("for", Map.class, tokens);
+        assertRequiredField("do", List.class, tokens);
 
-        // Process condition block conditionally
-        // Populate the condition type and sub-parse accordingly
+        // Process condition-block based on specified condition-type
         conditionType = Condition.stringToEnum(tokens.get("condition").toString());
         switch(conditionType) {
             case EACH:
                 subParseForEach(tokens);
                 break;
             case ITERATOR:
-                subParseForIterator(tokens);
-                break;
+                throw new InvalidExpressionSyntax("Iteration with `for` is not yet supported!");
             default:
                 throw new InvalidExpressionSyntax("FATAL: Invalid condition-type: " + conditionType);
         }
@@ -92,31 +84,11 @@ public class For extends Expression implements Subroutine {
         return this;
     }
 
-    private void subParseFor(Map<String, Object> tokens) throws InvalidExpressionSyntax {
-        // Check for required fields
-        assertRequiredField("for", "condition", String.class, tokens);
-
-        // Populate the condition type and sub-parse accordingly
-        conditionType = Condition.stringToEnum(tokens.get("condition").toString());
-        switch(conditionType) {
-            case EACH:
-                subParseForEach(tokens);
-                break;
-            case ITERATOR:
-                subParseForIterator(tokens);
-                break;
-            default:
-                throw new InvalidExpressionSyntax("FATAL: Invalid condition-type: " + conditionType);
-        }
-    }
-
     private void subParseForEach(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Check for required fields
-        Map<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("locator", String.class);
-        requiredFields.put("locatorType", String.class);
-        requiredFields.put("iterator", String.class);
-        assertRequiredFields("for-condition: each", requiredFields, tokens);
+        assertRequiredField("locator", String.class, tokens);
+        assertRequiredField("locatorType", String.class, tokens);
+        assertRequiredField("iterator", String.class, tokens);
 
         // Load the condition map
         condition.put("locatorType", tokens.get("locatorType"));
@@ -124,13 +96,7 @@ public class For extends Expression implements Subroutine {
         condition.put("iterator", tokens.get("iterator"));
     }
 
-    private void subParseForIterator(Map<String, Object> tokens) throws InvalidExpressionSyntax {
-        // TODO: fill
-    }
-
     public List<String> getFlatStack() {
-        ArrayList<String> stack = new ArrayList<>();
-        stack.addAll(doBlock.getSnapshots());
-        return stack;
+        return new ArrayList<>(doBlock.getSnapshots());
     }
 }

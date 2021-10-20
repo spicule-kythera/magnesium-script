@@ -1,11 +1,10 @@
 package uk.co.spicule.magnesium_script.expressions;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.JavascriptExecutor;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ public class Click extends Expression {
         ELEMENT,
         JS;
 
-        protected static ClickType stringToEnum(String name) throws InvalidExpressionSyntax {
+        private static ClickType stringToEnum(String name) throws InvalidExpressionSyntax {
             return ClickType.valueOf(Expression.validateTypeClass(ClickType.class, name));
         }
     }
@@ -64,11 +63,9 @@ public class Click extends Expression {
 
     public Click parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("click", String.class);
-        requiredFields.put("locator-type", String.class);
-        requiredFields.put("locator", String.class);
-        assertRequiredFields("click", requiredFields, tokens);
+        assertRequiredField("click", String.class, tokens);
+        assertRequiredField("locator-type", String.class, tokens);
+        assertRequiredField("locator", String.class, tokens);
 
         // Assert optional fields
         boolean hasTimeout = assertOptionalField("timeout", Integer.class, tokens);
