@@ -16,6 +16,7 @@ public class Wait extends Expression {
     enum WaitType {
         ALERT_EXISTS,
         ELEMENT_EXISTS,
+        ELEMENT_VISIBLE,
         ELEMENT_CLICKABLE,
         PAGE_LOADS,
         TRUE,
@@ -27,30 +28,12 @@ public class Wait extends Expression {
     }
 
     // Operation instance things
-    WaitType type = WaitType.TRUE;
     long timeout = 30; // Wait-Timeout in seconds
+    WaitType type = WaitType.TRUE;
     ExpectedCondition condition = null;
 
     public Wait(WebDriver driver, Expression parent) {
         super(driver, parent);
-    }
-
-    public Wait(WebDriver driver, Expression parent, WaitType condition, @Nullable By locator, @Nullable Integer timeout) {
-        super(driver, parent);
-
-        if(timeout != null) {
-            this.timeout = timeout;
-        }
-
-        switch(condition) {
-            case ALERT_EXISTS:
-                this.condition = ExpectedConditions.alertIsPresent();
-            case ELEMENT_EXISTS:
-                this.condition = ExpectedConditions.presenceOfElementLocated(locator);
-                break;
-            case ELEMENT_CLICKABLE:
-                this.condition = ExpectedConditions.elementToBeClickable(locator);
-        }
     }
 
     public String toString() {
@@ -63,11 +46,38 @@ public class Wait extends Expression {
         return new WebDriverWait(driver, timeout).until(condition);
     }
 
+    public Wait parse(WaitType type) throws InvalidExpressionSyntax{
+        return parse(type, null, null, null);
+    }
+
+    public Wait parse(WaitType type, int timeout) throws InvalidExpressionSyntax{
+        return parse(type, null, null, timeout);
+    }
+
+    public Wait parse(WaitType type, @Nullable String locatorType, @Nullable String locator) throws InvalidExpressionSyntax{
+        return parse(type, locatorType, locator, null);
+    }
+
+    public Wait parse(WaitType type, @Nullable String locatorType, @Nullable String locator, @Nullable Integer timeout) throws InvalidExpressionSyntax{
+        if(timeout == null){
+            timeout = (int) this.timeout;
+        }
+
+        Map<String, Object> tokens = new HashMap<>();
+        tokens.put("wait", timeout);
+        tokens.put("until", type.toString());
+
+        if(locatorType != null && locator != null) {
+            tokens.put("locator-type", locatorType);
+            tokens.put("locator", locator);
+        }
+
+        return parse(tokens);
+    }
+
     public Wait parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required fields
-        HashMap<String, Type> requiredFields = new HashMap<>();
-        requiredFields.put("wait", Integer.class);
-        assertRequiredFields("wait", requiredFields, tokens);
+        assertRequiredMultiTypeField("wait", Arrays.asList(Integer.class, Long.class), tokens);
         assertRequiredMultiTypeField("until", Arrays.asList(String.class, Boolean.class), tokens);
 
         // Populate timeout
@@ -82,6 +92,8 @@ public class Wait extends Expression {
                 return parseWaitUntilAlertExists();
             case ELEMENT_EXISTS:
                 return parseWaitUntilElementExists(tokens);
+            case ELEMENT_VISIBLE:
+                return parseWaitUntilElementVisible(tokens);
             case ELEMENT_CLICKABLE:
                 return parseWaitUntilElementClickable(tokens);
             case PAGE_LOADS:
@@ -110,6 +122,20 @@ public class Wait extends Expression {
         // Create the necessary wait object
         By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
         condition = ExpectedConditions.presenceOfElementLocated(locator);
+
+        return this;
+    }
+
+    private Wait parseWaitUntilElementVisible(Map<String, Object> tokens) throws InvalidExpressionSyntax {
+        // Assert the required and optional fields
+        HashMap<String, Type> requiredFields = new HashMap<>();
+        requiredFields.put("locator-type", String.class);
+        requiredFields.put("locator", String.class);
+        assertRequiredFields("wait-forCondition: element-visible", requiredFields, tokens);
+
+        // Create the necessary wait object
+        By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        condition = ExpectedConditions.visibilityOfElementLocated(locator);
 
         return this;
     }

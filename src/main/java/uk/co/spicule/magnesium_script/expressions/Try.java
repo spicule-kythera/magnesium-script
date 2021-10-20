@@ -76,7 +76,7 @@ public class Try extends Expression implements Subroutine {
         // Add the try block
         snapshots.addAll(tryBlock.getSnapshots());
 
-        // Add all of the catch blocks
+        // Add all the catch blocks
         for(Program block : catchBlocks.values()) {
             snapshots.addAll(block.getSnapshots());
         }

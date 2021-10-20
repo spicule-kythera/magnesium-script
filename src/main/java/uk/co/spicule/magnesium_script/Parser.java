@@ -1,12 +1,18 @@
 package uk.co.spicule.magnesium_script;
 
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.expressions.*;
 
 import java.util.List;
 import java.util.Map;
 
 public class Parser {
+  // Static things
+  public final static Logger LOG = LoggerFactory.getLogger(Parser.class);
+
+  // Instance things
   Map<String, Object> tokens;
 
   public static class InvalidExpressionType extends Exception {
@@ -41,6 +47,8 @@ public class Parser {
 
     for (Map<String, Object> instructionBlock : runBlock) {
       String instructionName = instructionBlock.keySet().toArray()[0].toString().replace("_", "-");
+
+      LOG.debug(instructionName + " -> " + instructionBlock);
 
       if (instructionName.equals("alert")) {
         program.addInstruction(new Alert(driver, parent).parse(instructionBlock));
