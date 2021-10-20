@@ -39,7 +39,7 @@ public class For extends Expression implements Subroutine {
                 case ITERATOR:
                     return subExecuteForIterator(condition);
                 default:
-                    throw new UnknownError("This error was thrown because the for-block could not match an iterator condition. This error should never be thrown. If you are reading this, logic as we know it has failed to work. God help you.");
+                    throw new RuntimeException("FATAL: Invalid condition-type: " + conditionType);
             }
         } catch (Break.StopIterationException e) {
             // Do nothing
@@ -81,6 +81,8 @@ public class For extends Expression implements Subroutine {
             case ITERATOR:
                 subParseForIterator(tokens);
                 break;
+            default:
+                throw new InvalidExpressionSyntax("FATAL: Invalid condition-type: " + conditionType);
         }
 
         // Process do block
@@ -103,6 +105,8 @@ public class For extends Expression implements Subroutine {
             case ITERATOR:
                 subParseForIterator(tokens);
                 break;
+            default:
+                throw new InvalidExpressionSyntax("FATAL: Invalid condition-type: " + conditionType);
         }
     }
 

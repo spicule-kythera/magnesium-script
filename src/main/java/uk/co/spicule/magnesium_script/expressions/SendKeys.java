@@ -59,6 +59,8 @@ public class SendKeys extends Expression {
                     guardedSleep(inputRate);
                 }
                 break;
+            default:
+                throw new RuntimeException("FATAL: Invalid input-type: " + type);
         }
 
         return null;
@@ -77,6 +79,8 @@ public class SendKeys extends Expression {
                     guardedSleep(inputRate);
                 }
                 break;
+            default:
+                throw new RuntimeException("FATAL: Invalid input-type: " + type);
         }
 
         return null;

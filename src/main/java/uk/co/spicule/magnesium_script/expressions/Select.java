@@ -48,6 +48,8 @@ public class Select extends Expression {
             case VALUE:
                 menu.selectByValue(value);
                 break;
+            default:
+                throw new RuntimeException("FATAL: Invalid select-type: " + type);
         }
 
         return null;
@@ -74,9 +76,13 @@ public class Select extends Expression {
         switch (type) {
             case INDEX:
                 index = Integer.parseInt(tokens.get("select").toString());
+                break;
             case TEXT:
             case VALUE:
                 value = tokens.get("select").toString();
+                break;
+            default:
+                throw new InvalidExpressionSyntax("FATAL: Invalid select-type: " + type);
         }
 
         // Populate wait

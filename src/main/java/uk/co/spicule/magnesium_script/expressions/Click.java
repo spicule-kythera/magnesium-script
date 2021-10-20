@@ -47,7 +47,7 @@ public class Click extends Expression {
                 ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
                 break;
             default:
-                throw new RuntimeException("Click type not available!");
+                throw new RuntimeException("FATAL: Invalid click-type: " + type);
         }
 
         return null;

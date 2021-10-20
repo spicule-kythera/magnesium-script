@@ -39,10 +39,15 @@ public class Alert extends Expression {
     switch(action) {
       case ACCEPT:
         alert.accept();
+        break;
       case DISMISS:
         alert.dismiss();
+        break;
       case SEND_KEYS:
         keys.execute(alert);
+        break;
+      default:
+        throw new RuntimeException("FATAL: Invalid alert-action: " + action);
     }
     return null;
   }

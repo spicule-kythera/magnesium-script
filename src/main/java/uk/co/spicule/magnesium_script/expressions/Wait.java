@@ -103,7 +103,7 @@ public class Wait extends Expression {
             case FALSE:
                 return parseWaitUntilFalse();
             default:
-                throw new InvalidExpressionSyntax("Invalid `wait` type: (`" + forToken+ "`: " + type + ")");
+                throw new InvalidExpressionSyntax("FATAL: Invalid wait-type: " + type);
         }
     }
 
