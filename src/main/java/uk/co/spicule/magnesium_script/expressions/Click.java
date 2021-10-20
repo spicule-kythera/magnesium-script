@@ -21,26 +21,22 @@ public class Click extends Expression {
 
     ClickType type = ClickType.ELEMENT;
     By locator = null;
+    int index = 0;
     Integer timeout = null;
+    Wait wait = null;
 
     public Click(WebDriver driver, Expression parent) {
         super(driver, parent);
     }
 
-    public Click(WebDriver driver, Expression parent, ClickType type, By locator) {
-        super(driver, parent);
-        this.type = type;
-        this.locator = locator;
-    }
-
     public Object execute() {
         // Wait for the element to be clickable
-        new Wait(driver, this, Wait.WaitType.ELEMENT_CLICKABLE, locator, timeout).execute();
+        wait.execute();
 
         // Find the element
-        WebElement element = driver.findElement(locator);
+        WebElement element = driver.findElements(locator).get(index);
         
-        //Scrolls element into view before clicking
+        // Scrolls element into view before clicking
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
 
         switch (type) {
@@ -57,6 +53,15 @@ public class Click extends Expression {
         return null;
     }
 
+    public Click parse(ClickType type, String locatorType, String locator) throws InvalidExpressionSyntax {
+        Map<String, Object> tokens = new HashMap<>();
+        tokens.put("click", type.toString());
+        tokens.put("locator-type", locatorType);
+        tokens.put("locator", locator);
+
+        return parse(tokens);
+    }
+
     public Click parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required fields
         HashMap<String, Type> requiredFields = new HashMap<>();
@@ -71,11 +76,21 @@ public class Click extends Expression {
             timeout = Integer.parseInt(tokens.get("timeout").toString());
         }
 
+        boolean hasIndex = assertOptionalField("index", Integer.class, tokens);
+        if(hasIndex) {
+            this.index = Integer.parseInt(tokens.get("index").toString());
+        }
+
         // Click type
         type = ClickType.stringToEnum(tokens.get("click").toString());
 
         // Get the locator
-        locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        String locatorType = tokens.get("locator-type").toString();
+        String locator = tokens.get("locator").toString();
+        this.locator = Expression.by(locatorType, locator);
+
+        // Populate wait
+        wait = new Wait(driver, this).parse(Wait.WaitType.ELEMENT_CLICKABLE, locatorType, locator);
 
         return this;
     }

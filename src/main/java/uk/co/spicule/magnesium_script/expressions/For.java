@@ -72,7 +72,16 @@ public class For extends Expression implements Subroutine {
         assertRequiredFields("for", requiredFields, tokens);
 
         // Process condition block conditionally
-        subParseFor((Map<String, Object>) tokens.get("for"));
+        // Populate the condition type and sub-parse accordingly
+        conditionType = Condition.stringToEnum(tokens.get("condition").toString());
+        switch(conditionType) {
+            case EACH:
+                subParseForEach(tokens);
+                break;
+            case ITERATOR:
+                subParseForIterator(tokens);
+                break;
+        }
 
         // Process do block
         ArrayList<Map<String, Object>> runBlockTokens = (ArrayList<Map<String, Object>>) tokens.get("do");

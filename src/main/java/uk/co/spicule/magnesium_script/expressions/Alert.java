@@ -18,6 +18,7 @@ public class Alert extends Expression {
     }
   }
 
+  Wait wait = null;
   AlertAction action = null;
   SendKeys keys = null;
   Integer timeout = null;
@@ -31,7 +32,7 @@ public class Alert extends Expression {
     LOG.debug("Resolving expression: `" + this.getClass() + "`!");
 
     // Wait for an alert to appear and focus on it
-    new Wait(driver, this, Wait.WaitType.ALERT_EXISTS, null, timeout).execute();
+    wait.execute();
     org.openqa.selenium.Alert alert = driver.switchTo().alert();
 
     // Perform the action
@@ -69,6 +70,9 @@ public class Alert extends Expression {
     if(action == AlertAction.SEND_KEYS) {
       parseSendKeys(tokens);
     }
+
+    // Populate wait
+    wait = new Wait(driver, this).parse(Wait.WaitType.ALERT_EXISTS, timeout);
 
     return this;
   }

@@ -71,10 +71,8 @@ public class MagnesiumScript {
         Map<String, Object> tokens;
         String fileName = filePath.toString().toLowerCase();
 
-        if(fileName.endsWith("json")) {
-            tokens = Lexer.jsonToTokenTree(filePath);
-        } else if(fileName.endsWith("yaml") || fileName.endsWith("yml")) {
-            tokens = Lexer.yamlToTokenTree(filePath);
+        if(fileName.endsWith("yaml") || fileName.endsWith("yml") || fileName.endsWith("json")) {
+            tokens = Lexer.textToTokenTree(filePath);
         } else {
             throw new InvalidArgumentException("Unsupported parsing for file with type: " + fileName);
         }

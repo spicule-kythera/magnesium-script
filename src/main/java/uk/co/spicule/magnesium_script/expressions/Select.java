@@ -24,6 +24,7 @@ public class Select extends Expression {
     SelectType type = SelectType.VALUE;
     String value = null;
     Integer index = null;
+    Wait wait = null;
 
     public Select(WebDriver driver, Expression parent) {
         super(driver, parent);
@@ -33,7 +34,7 @@ public class Select extends Expression {
         LOG.debug("Selecting from drop-down element `" + locator + "` option by " + type + ": `" + ((type == SelectType.INDEX) ? index : value) + "`!");
 
         // Wait for and find the element
-        new Wait(driver, this, Wait.WaitType.ELEMENT_EXISTS, locator, null).execute();
+        wait.execute();
         WebElement rawMenu = driver.findElement(locator);
         org.openqa.selenium.support.ui.Select menu = new org.openqa.selenium.support.ui.Select(rawMenu);
 
@@ -62,7 +63,9 @@ public class Select extends Expression {
         assertRequiredMultiTypeField("by", Arrays.asList(String.class, Integer.class), tokens);
 
         // Populate the locator
-        locator = by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        String locatorType = tokens.get("locator-type").toString();
+        String locator = tokens.get("locator").toString();
+        this.locator = by(locatorType, locator);
 
         // Populate the selection type
         type = SelectType.stringToEnum(tokens.get("by").toString());
@@ -75,6 +78,9 @@ public class Select extends Expression {
             case VALUE:
                 value = tokens.get("select").toString();
         }
+
+        // Populate wait
+        wait = new Wait(driver, this).parse(Wait.WaitType.ELEMENT_EXISTS, locatorType, locator);
 
         return this;
     }
