@@ -1,5 +1,7 @@
 # MagnesiumScript (Ms)
 
+[![Code Quality](https://github.com/spicule-kythera/magnesium-script/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/spicule-kythera/magnesium-script/actions/workflows/codeql-analysis.yml)
+
 A Domain-Specific-Language for creating expressive and simple automation scripts for Selenium-based web-agents.
 
 # Quick start
