@@ -1,6 +1,7 @@
 package uk.co.spicule.magnesium_script;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidArgumentException;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TestExpressionClassUtilities {
+    @Disabled
     @Test
     void validByLocatorTypes() {
         HashMap<String, By> expected_entries = new HashMap<>();
