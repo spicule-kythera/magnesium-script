@@ -29,8 +29,8 @@ public class MagnesiumScript {
                          "for Selenium-based web-agents.")
             .defaultHelp(true);
     private static final int MAJOR = 0;
-    private static final int MINOR = 1;
-    private static final int PATCH = 6;
+    private static final int MINOR = 2;
+    private static final int PATCH = 1;
 
     public MagnesiumScript(WebDriver driver) {
         LOG.info(version());
