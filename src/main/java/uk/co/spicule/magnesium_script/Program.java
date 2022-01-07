@@ -1,7 +1,5 @@
 package uk.co.spicule.magnesium_script;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.expressions.*;
@@ -72,12 +70,10 @@ public class Program {
         }
     }
 
-    @Getter
     public final List<String> getSnapshots() {
         return snapshots;
     }
 
-    @Setter
     public void setSnapshots(List<String> snapshots) {
         this.snapshots = snapshots;
     }

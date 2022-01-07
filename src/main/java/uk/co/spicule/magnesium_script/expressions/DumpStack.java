@@ -1,7 +1,5 @@
 package uk.co.spicule.magnesium_script.expressions;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
 
@@ -75,14 +73,12 @@ public class DumpStack extends Expression {
         return this;
     }
 
-    @Setter
     public void setStack(List<String> stack) {
         for(String item : stack) {
             this.stack.push(item);
         }
     }
 
-    @Getter
     public final Stack<String> getStack() {
         return stack;
     }

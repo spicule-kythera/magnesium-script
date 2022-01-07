@@ -1,7 +1,5 @@
 package uk.co.spicule.magnesium_script.expressions;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.openqa.selenium.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,17 +42,14 @@ abstract public class Expression {
       throws InvalidExpressionSyntax, Parser.InvalidExpressionType;
 
   // Setters and Getters
-  @Getter
   protected final Map<String, Object> getContext() {
     return context;
   }
 
-  @Getter
   public final Expression getParent() {
     return parent;
   }
 
-  @Setter
   public void setParent(Expression parent) {
     this.parent = parent;
   }
