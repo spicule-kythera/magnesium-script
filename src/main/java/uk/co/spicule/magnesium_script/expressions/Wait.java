@@ -40,6 +40,16 @@ public class Wait extends Expression {
         super(driver, parent);
     }
 
+    protected Wait(WebDriver driver, Expression parent, WaitType type, String locatorType, String locator) {
+        super(driver, parent);
+
+        try {
+            parse(type, locatorType, locator);
+        } catch (InvalidExpressionSyntax e) {
+
+        }
+    }
+
     public String toString() {
         return "Waiting for " + timeout + "s until: " + condition;
     }

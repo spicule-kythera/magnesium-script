@@ -6,7 +6,11 @@ import org.openqa.selenium.WebElement;
 import uk.co.spicule.magnesium_script.Parser;
 import uk.co.spicule.magnesium_script.Program;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
 
 @SuppressWarnings("unchecked")
 public class For extends Expression implements Subroutine {
@@ -60,8 +64,9 @@ public class For extends Expression implements Subroutine {
 
     private Object subExecuteForEach() throws Break.StopIterationException {
         List<WebElement> elements = driver.findElements(locator);
+        LOG.debug("Iterating on " + elements.size() + " elements!");
         for(WebElement element: elements) {
-            LOG.info("Storing `" + iteratorName + "` as: " + element);
+            LOG.debug("Storing `" + iteratorName + "` as: " + element);
             this.context.put(iteratorName, element);
             doBlock.run();
         }
@@ -71,7 +76,7 @@ public class For extends Expression implements Subroutine {
 
     private Object subExecuteForIterator() throws Break.StopIterationException {
         for(int i = rangeMin; i < rangeMax; i+=rangeIncrement) {
-            LOG.info("Storing `" + iteratorName + "` as: " + i);
+            LOG.debug("Storing `" + iteratorName + "` as: " + i);
             context.put(iteratorName, i);
             doBlock.run();
         }
@@ -111,12 +116,18 @@ public class For extends Expression implements Subroutine {
 
         // Get the custom iterator name, if any
         if(assertOptionalField("iterator-name", String.class, inBlock)) {
-            iteratorName = inBlock.get("iterator-name").toString().replaceAll("-", "_");
+            String iteratorName = inBlock.get("iterator-name").toString();
+            Matcher matcher = SendKeys.SPECIAL_CHARACTER_PATTERN.matcher(iteratorName);
+
+            if(!matcher.find()) {
+                throw new Expression.InvalidExpressionSyntax("iterator name: must match regex pattern: `" + SendKeys.SPECIAL_CHARACTER_PATTERN + "`");
+            }
+            this.iteratorName = iteratorName.substring(1 + matcher.start(), matcher.end() - 1);
         }
 
         // Populate the variable
         String locatorType = inBlock.get("locator-type").toString();
-        String locator = inBlock.get("locator-type").toString();
+        String locator = inBlock.get("locator").toString();
         this.locator = (By) by(locatorType, locator);
 
         return this;

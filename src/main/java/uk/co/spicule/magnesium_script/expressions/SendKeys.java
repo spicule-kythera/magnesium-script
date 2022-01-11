@@ -13,12 +13,13 @@ public class SendKeys extends Expression {
         STRING, SPECIAL
     }
 
-    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z]+[a-zA-Z\\-_]+}");
+    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z]+[a-zA-Z_\\-0-9]*[a-zA-Z0-9]*}");
 
     By locator = null;
     InputType type = InputType.STRING;
     String keys = null;
     Keys specialKeys = null;
+    int repeat = 1;
     long inputRate = 100; // Delay between keys in ms
 
     public SendKeys(WebDriver driver, Expression parent) {
@@ -36,28 +37,28 @@ public class SendKeys extends Expression {
     }
 
     public Object execute() {
-        LOG.debug("Sending " + type.toString() + ": `" + ((type == InputType.STRING) ? keys : specialKeys) + "` to " + locator + " at a rate of " + inputRate + "ms/char!");
+        LOG.debug("Sending " + type.toString() + ": `" + ((type == InputType.STRING) ? keys : specialKeys) + "` to " + locator + " " + repeat + " times at a rate of " + inputRate + "ms/char!");
 
         // Get the web element and send the keys
         WebElement element = driver.findElement(locator);
 
         // Send the input
-        switch (type) {
-            case SPECIAL:
-                element.sendKeys(specialKeys);
-                break;
-            case STRING:
-                return subExecuteString();
-            default:
-                throw new RuntimeException("FATAL: Invalid input-type: " + type);
+        for(int i = 0; i < repeat; ++i){
+            switch (type) {
+                case SPECIAL:
+                    element.sendKeys(specialKeys);
+                    break;
+                case STRING:
+                    return subExecuteString();
+                default:
+                    throw new RuntimeException("FATAL: Invalid input-type: " + type);
+            }
         }
 
         return null;
     }
 
     public Object execute(Alert alert) {
-        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
-
         // Send the input
         switch (type) {
             case SPECIAL:
@@ -112,6 +113,9 @@ public class SendKeys extends Expression {
         // Populate optional fields
         if(assertOptionalField("input-rate", Integer.class, tokens)) {
             inputRate = Long.parseLong(tokens.get("input-rate").toString());
+        }
+        if(assertOptionalField("repeat", Integer.class, tokens)) {
+            repeat = Integer.parseInt(tokens.get("repeat").toString());
         }
 
         // Populate the locator
