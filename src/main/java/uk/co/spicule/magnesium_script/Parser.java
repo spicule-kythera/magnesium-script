@@ -94,6 +94,9 @@ public class Parser {
         case "snapshot":
           program.addInstruction(new Snapshot(driver, parent).parse(instructionBlock));
           break;
+        case "tab":
+          program.addInstruction(new Tab(driver, parent).parse(instructionBlock));
+          break;
         case "try":
           program.addInstruction(new Try(driver, parent).parse(instructionBlock));
           break;
