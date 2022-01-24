@@ -70,6 +70,10 @@ public class Program {
         }
     }
 
+    public final int size() {
+        return this.program.size();
+    }
+
     public final List<String> getSnapshots() {
         return snapshots;
     }

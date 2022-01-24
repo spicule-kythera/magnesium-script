@@ -76,6 +76,9 @@ public class Parser {
         case "if":
           program.addInstruction(new If(driver, parent).parse(instructionBlock));
           break;
+        case "navigate":
+          program.addInstruction(new Navigate(driver, parent).parse(instructionBlock));
+          break;
         case "no-op":
           program.addInstruction(new NoOp(driver, parent).parse(instructionBlock));
           break;
@@ -90,6 +93,9 @@ public class Parser {
           break;
         case "snapshot":
           program.addInstruction(new Snapshot(driver, parent).parse(instructionBlock));
+          break;
+        case "tab":
+          program.addInstruction(new Tab(driver, parent).parse(instructionBlock));
           break;
         case "try":
           program.addInstruction(new Try(driver, parent).parse(instructionBlock));

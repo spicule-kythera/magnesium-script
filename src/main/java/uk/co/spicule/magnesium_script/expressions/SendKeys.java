@@ -13,12 +13,13 @@ public class SendKeys extends Expression {
         STRING, SPECIAL
     }
 
-    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z0-9_]+}");
+    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z]+[a-zA-Z_\\-0-9]*[a-zA-Z0-9]*}");
 
     By locator = null;
     InputType type = InputType.STRING;
     String keys = null;
     Keys specialKeys = null;
+    int repeat = 1;
     long inputRate = 100; // Delay between keys in ms
 
     public SendKeys(WebDriver driver, Expression parent) {
@@ -36,32 +37,28 @@ public class SendKeys extends Expression {
     }
 
     public Object execute() {
-        LOG.debug("Sending " + type.toString() + ": `" + ((type == InputType.STRING) ? keys : specialKeys) + "` to " + locator + " at a rate of " + inputRate + "ms/char!");
+        LOG.debug("Sending " + type.toString() + ": `" + ((type == InputType.STRING) ? keys : specialKeys) + "` to " + locator + " " + repeat + " times at a rate of " + inputRate + "ms/char!");
 
         // Get the web element and send the keys
         WebElement element = driver.findElement(locator);
 
         // Send the input
-        switch (type) {
-            case SPECIAL:
-                element.sendKeys(specialKeys);
-                break;
-            case STRING:
-                for (Character c : keys.toCharArray()) {
-                    element.sendKeys(c.toString());
-                    Expression.guardedSleep(inputRate);
-                }
-                break;
-            default:
-                throw new RuntimeException("FATAL: Invalid input-type: " + type);
+        for(int i = 0; i < repeat; ++i){
+            switch (type) {
+                case SPECIAL:
+                    element.sendKeys(specialKeys);
+                    break;
+                case STRING:
+                    return subExecuteString();
+                default:
+                    throw new RuntimeException("FATAL: Invalid input-type: " + type);
+            }
         }
 
         return null;
     }
 
     public Object execute(Alert alert) {
-        LOG.debug("Resolving expression: `" + this.getClass() + "`!");
-
         // Send the input
         switch (type) {
             case SPECIAL:
@@ -79,6 +76,34 @@ public class SendKeys extends Expression {
         return null;
     }
 
+    private Object subExecuteString() {
+        // Make a deep copy of the original input as not to change it
+        String keys = String.copyValueOf(this.keys.toCharArray());
+
+        // Inject the variable name
+        Matcher matcher = SPECIAL_CHARACTER_PATTERN.matcher(keys);
+        if(matcher.find()){
+            String variableName = keys.substring(1 + matcher.start(), matcher.end() - 1).replaceAll("-", "_");
+            Object value = resolveVariableName(variableName);
+            if(value != null){
+                LOG.debug("Injecting `" + value + "` into `" + keys + "`");
+                keys = keys.replaceAll("\\{" + variableName + "}", value.toString());
+                LOG.debug("New input: " + keys);
+            }
+        }
+
+        // Get the element
+        WebElement input = driver.findElement(locator);
+
+        // Send the keys
+        for(Character c: keys.toCharArray()) {
+            input.sendKeys(c.toString());
+            Expression.guardedSleep(inputRate);
+        }
+
+        return null;
+    }
+
     public SendKeys parse(Map<String, Object> tokens) throws InvalidExpressionSyntax {
         // Assert the required fields
         assertRequiredField("send-keys", String.class, tokens);
@@ -89,9 +114,12 @@ public class SendKeys extends Expression {
         if(assertOptionalField("input-rate", Integer.class, tokens)) {
             inputRate = Long.parseLong(tokens.get("input-rate").toString());
         }
+        if(assertOptionalField("repeat", Integer.class, tokens)) {
+            repeat = Integer.parseInt(tokens.get("repeat").toString());
+        }
 
         // Populate the locator
-        locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        locator = (By) by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
 
         // Populate the raw keys input
         keys = tokens.get("send-keys").toString();

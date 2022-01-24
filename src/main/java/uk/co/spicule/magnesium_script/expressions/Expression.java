@@ -54,8 +54,10 @@ abstract public class Expression {
     this.parent = parent;
   }
 
+
+
   // Common expression utilities
-  public static By by(String locatorType, String locator) {
+  public Object by(String locatorType, String locator) {
     String type = locatorType.toLowerCase();
     type = type.replace("_", "-");
 
@@ -76,6 +78,8 @@ abstract public class Expression {
         return By.tagName(locator);
       case "xpath":
         return By.xpath(locator);
+      case "variable":
+        return resolveVariableName(locator);
       default:
         throw new InvalidArgumentException("Unsupported locator type: `" + locatorType + "`!");
     }
@@ -156,5 +160,60 @@ abstract public class Expression {
         this.context.put(entry.getKey(), entry.getValue());
       }
     }
+  }
+
+  public String getWebElementXPath(WebElement element) {
+    return getWebElementXPath(element, "");
+  }
+
+  private String getWebElementXPath(WebElement element, String context) {
+    String tag = element.getTagName();
+
+    if(tag.equalsIgnoreCase("html")) {
+      return "/html[1]" + context;
+    }
+
+    WebElement parent = element.findElement(By.xpath(".."));
+    List<WebElement> ancestors = parent.findElements(By.xpath("*"));
+
+    int count = 0;
+    for(int i = 0; i < ancestors.size(); ++i) {
+      WebElement child = ancestors.get(i);
+      String childTag = child.getTagName();
+
+      if(tag.equalsIgnoreCase(childTag)) {
+        count++;
+      }
+      if(element.equals(child)) {
+        return getWebElementXPath(parent, "/" + tag + "[" + count + "]" + context);
+      }
+    }
+    return null;
+  }
+
+  protected Object resolveVariableName(String variableName) {
+    Object value = context.get(variableName);
+
+    if(value != null){
+      LOG.debug("Found variable `" + variableName + "` = `" + value + "` in context: `" + this.getClass() + "`");
+      return value;
+    }
+
+    LOG.warn("Could not find `" + variableName + "` in context: `" + this.getClass() + "` moving up a scope...");
+    Expression parent = this.parent;
+    while(parent != null) {
+      value = parent.getContext().get(variableName);
+
+      if(value != null) {
+        LOG.debug("Found variable `" + variableName + "` = `" + value + "` in context: `" + parent.getClass() + "`");
+        return value;
+      }
+
+      LOG.warn("Could not find `" + variableName + "` in context: `" + parent.getClass() + "` moving up a scope...");
+      parent = parent.getParent();
+    }
+
+    LOG.error("Tried to resolve the variable name `" + variableName + "` but was undefined!");
+    return null;
   }
 }

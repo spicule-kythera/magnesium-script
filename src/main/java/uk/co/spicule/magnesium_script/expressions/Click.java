@@ -5,6 +5,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,21 +21,35 @@ public class Click extends Expression {
 
     ClickType type = ClickType.ELEMENT;
     By locator = null;
+    String variableName = null;
     int index = 0;
     Integer timeout = null;
-    Wait wait = null;
 
     public Click(WebDriver driver, Expression parent) {
         super(driver, parent);
     }
 
     public Object execute() {
-        // Wait for the element to be clickable
-        wait.execute();
+        // Fetch the element
+        WebElement element;
+        if(locator != null){
+            element = driver.findElements(locator).get(index);
+        } else {
+            Object rawVariableValue = resolveVariableName(variableName);
+            Type expected = WebElement.class;
+            Type got = rawVariableValue.getClass();
+            if(!(rawVariableValue instanceof WebElement)) {
+                throw new RuntimeException("Click expected variable `" + variableName + "` to be of type `" + expected + "` but got `" + got + "`!");
+            }
 
-        // Find the element
-        WebElement element = driver.findElements(locator).get(index);
-        
+            element = (WebElement) rawVariableValue;
+        }
+
+        // Wait for the element to be clickable
+        String xpath = getWebElementXPath(element);
+        LOG.debug("Click Locator derevation: `" + xpath + "`");
+//        new Wait(driver, this, Wait.WaitType.ELEMENT_CLICKABLE, "xpath", xpath).execute();
+
         // Scrolls element into view before clicking
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
 
@@ -81,13 +96,18 @@ public class Click extends Expression {
         // Click type
         type = ClickType.stringToEnum(tokens.get("click").toString());
 
-        // Get the locator
-        String locatorType = tokens.get("locator-type").toString();
+        // Get the locator type and subsequent clickable pieces
+        String locatorType = tokens.get("locator-type").toString().toLowerCase();
         String locator = tokens.get("locator").toString();
-        this.locator = Expression.by(locatorType, locator);
 
-        // Populate wait
-        wait = new Wait(driver, this).parse(Wait.WaitType.ELEMENT_CLICKABLE, locatorType, locator);
+        // Populate the locator
+        switch(locatorType){
+            case "variable":
+                variableName = locator.substring(1, locator.length() - 1);
+                break;
+            default:
+                this.locator = (By) by(locatorType, locator);
+        }
 
         return this;
     }

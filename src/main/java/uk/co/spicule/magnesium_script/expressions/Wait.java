@@ -40,6 +40,16 @@ public class Wait extends Expression {
         super(driver, parent);
     }
 
+    protected Wait(WebDriver driver, Expression parent, WaitType type, String locatorType, String locator) {
+        super(driver, parent);
+
+        try {
+            parse(type, locatorType, locator);
+        } catch (InvalidExpressionSyntax e) {
+
+        }
+    }
+
     public String toString() {
         return "Waiting for " + timeout + "s until: " + condition;
     }
@@ -122,7 +132,7 @@ public class Wait extends Expression {
         assertRequiredField("locator", String.class, tokens);
 
         // Create the necessary wait object
-        By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        By locator = (By) by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
         condition = ExpectedConditions.presenceOfElementLocated(locator);
 
         return this;
@@ -134,7 +144,7 @@ public class Wait extends Expression {
         assertRequiredField("locator", String.class, tokens);
 
         // Create the necessary wait object
-        By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        By locator = (By) by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
         condition = ExpectedConditions.visibilityOfElementLocated(locator);
 
         return this;
@@ -146,7 +156,7 @@ public class Wait extends Expression {
         assertRequiredField("locator", String.class, tokens);
 
         // Create the necessary wait object
-        By locator = Expression.by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
+        By locator = (By) by(tokens.get("locator-type").toString(), tokens.get("locator").toString());
         condition = ExpectedConditions.elementToBeClickable(locator);
 
         return this;

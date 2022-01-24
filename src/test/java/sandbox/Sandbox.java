@@ -23,6 +23,7 @@ public class Sandbox {
         // Set up the interpreter
         MagnesiumScript interpreter = new MagnesiumScript(driver);
         URL scriptPath = MagnesiumScript.class.getClassLoader().getResource("sandbox.yaml");
+
         try {
             interpreter.interpret(Paths.get(scriptPath.toURI()));
         } catch (Exception e) {

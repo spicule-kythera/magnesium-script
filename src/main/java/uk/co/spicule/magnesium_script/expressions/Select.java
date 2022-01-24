@@ -63,7 +63,7 @@ public class Select extends Expression {
         // Populate the locator
         String locatorType = tokens.get("locator-type").toString();
         String locator = tokens.get("locator").toString();
-        this.locator = by(locatorType, locator);
+        this.locator = (By) by(locatorType, locator);
 
         // Populate the selection type
         type = SelectType.stringToEnum(tokens.get("by").toString());

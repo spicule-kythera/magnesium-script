@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidArgumentException;
+import uk.co.spicule.magnesium_script.expressions.Alert;
 import uk.co.spicule.magnesium_script.expressions.Expression;
 
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class TestExpressionClassUtilities {
             String key = e.getKey();
             By expected = e.getValue();
 
-            Assertions.assertEquals(Expression.by(key, locator), expected);
+            Assertions.assertEquals((By) new Alert().by(key, locator), expected);
         }
     }
 
@@ -40,7 +41,7 @@ public class TestExpressionClassUtilities {
     void invalidByLocatorType() {
         String locatorType = "invalid type";
         Assertions.assertThrows(InvalidArgumentException.class, () -> {
-            Expression.by(locatorType, "locator string");
+            new Alert().by(locatorType, "locator string");
         });
     }
 
