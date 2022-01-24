@@ -10,7 +10,7 @@
     <url>https://github.com/spicule-kythera/magnesium-script</url>
     <groupId>uk.co.spicule</groupId>
     <artifactId>magnesium-script</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.0-SNAPSHOT</version>
 
     <!-- License -->
     <licenses>
@@ -190,13 +190,8 @@
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-server</artifactId>
-            <version>3.141.59</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-support</artifactId>
-            <version>3.141.59</version>
+            <version>4.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
