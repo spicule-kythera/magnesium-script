@@ -1,0 +1,24 @@
+{
+  "version": "magnesium",
+  "run": [
+    {
+      "tab": "new",
+      "url": "https://duckduckgo.com"
+    },
+    {
+      "tab": "switch-to",
+      "index": 0
+    },
+    {
+      "send-keys": "dingus",
+      "locator-type": "class",
+      "locator": "Search",
+      "input-rate": 0
+    },
+    {
+      "send-keys": "{enter}",
+      "locator-type": "class",
+      "locator": "Search"
+    }
+  ]
+}

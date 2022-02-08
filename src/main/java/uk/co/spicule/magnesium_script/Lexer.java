@@ -10,7 +10,11 @@ import java.util.TreeMap;
 public class Lexer {
     protected static Map<String, Object> textToTokenTree(Path filePath) throws FileNotFoundException {
         FileInputStream input = new FileInputStream(filePath.toAbsolutePath().toString());
-        Map<String, Object> map = new Yaml().load(input);
+
+        Yaml yaml = new Yaml();
+        yaml.;
+
+        Map<String, Object> map = yaml.load(input);
         return new TreeMap<>(map);
     }
 }

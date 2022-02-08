@@ -4,7 +4,11 @@
 
 A Domain-Specific-Language for creating expressive and simple automation scripts for Selenium-based web-agents.
 
-# Quick start
+# Language Usage and Documentation
+
+For usage and descriptions on the language itself, see the [Github Wiki](https://github.com/spicule-kythera/magnesium-script/wiki).
+
+# Development Quick start
 
 ### Run JAR as local executeable
 
