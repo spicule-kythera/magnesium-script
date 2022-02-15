@@ -6,14 +6,11 @@ import org.openqa.selenium.*;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SendKeys extends Expression {
     enum InputType {
         STRING, SPECIAL
     }
-
-    static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z]+[a-zA-Z_\\-0-9]*[a-zA-Z0-9]*}");
 
     By locator = null;
     InputType type = InputType.STRING;

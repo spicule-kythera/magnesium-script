@@ -47,64 +47,42 @@ public class Parser {
     Program program = new Program(parent);
 
     for (Map<String, Object> instructionBlock : runBlock) {
-      String instructionName = instructionBlock.keySet().toArray()[0].toString().replace("_", "-");
-
-      LOG.debug(instructionName + " -> " + instructionBlock);
-
-      switch (instructionName) {
-        case "alert":
-          program.addInstruction(new Alert(driver, parent).parse(instructionBlock));
-          break;
-        case "break":
-          program.addInstruction(new Break(driver, parent).parse(instructionBlock));
-          break;
-        case "click":
-          program.addInstruction(new Click(driver, parent).parse(instructionBlock));
-          break;
-        case "do":
-          program.addInstruction(new DoWhile(driver, parent).parse(instructionBlock));
-          break;
-        case "dump-stack":
-          program.addInstruction(new DumpStack(driver, parent).parse(instructionBlock));
-          break;
-        case "for":
-          program.addInstruction(new For(driver, parent).parse(instructionBlock));
-          break;
-        case "get":
-          program.addInstruction(new Get(driver, parent).parse(instructionBlock));
-          break;
-        case "if":
-          program.addInstruction(new If(driver, parent).parse(instructionBlock));
-          break;
-        case "navigate":
-          program.addInstruction(new Navigate(driver, parent).parse(instructionBlock));
-          break;
-        case "no-op":
-          program.addInstruction(new NoOp(driver, parent).parse(instructionBlock));
-          break;
-        case "select":
-          program.addInstruction(new Select(driver, parent).parse(instructionBlock));
-          break;
-        case "send-keys":
-          program.addInstruction(new SendKeys(driver, parent).parse(instructionBlock));
-          break;
-        case "screenshot":
-          program.addInstruction(new Screenshot(driver, parent).parse(instructionBlock));
-          break;
-        case "snapshot":
-          program.addInstruction(new Snapshot(driver, parent).parse(instructionBlock));
-          break;
-        case "tab":
-          program.addInstruction(new Tab(driver, parent).parse(instructionBlock));
-          break;
-        case "try":
-          program.addInstruction(new Try(driver, parent).parse(instructionBlock));
-          break;
-        case "wait":
-          program.addInstruction(new Wait(driver, parent).parse(instructionBlock));
-          break;
-        default:
-          throw new InvalidExpressionType(instructionName);
+      if(instructionBlock.containsKey("alert")) {
+        program.addInstruction(new Alert(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("break")) {
+        program.addInstruction(new Break(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("click")) {
+        program.addInstruction(new Click(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("do-while")) {
+        program.addInstruction(new DoWhile(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("dump-stack")) {
+        program.addInstruction(new DumpStack(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("for")) {
+        program.addInstruction(new For(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("get")) {
+        program.addInstruction(new Get(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("if")) {
+        program.addInstruction(new If(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("navigate")) {
+        program.addInstruction(new Navigate(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("no-op")) {
+        program.addInstruction(new NoOp(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("screenshot")) {
+        program.addInstruction(new Screenshot(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("select")) {
+        program.addInstruction(new Select(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("send-keys")) {
+        program.addInstruction(new SendKeys(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("snapshot")) {
+        program.addInstruction(new Snapshot(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("tab")) {
+        program.addInstruction(new Tab(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("try")) {
+        program.addInstruction(new Try(driver, parent).parse(instructionBlock));
+      } else if(instructionBlock.containsKey("wait")) {
+        program.addInstruction(new Wait(driver, parent).parse(instructionBlock));
+      } else {
+        throw new InvalidExpressionType(instructionBlock.toString());
       }
     }
     return program;

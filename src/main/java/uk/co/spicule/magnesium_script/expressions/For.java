@@ -63,11 +63,13 @@ public class For extends Expression implements Subroutine {
     }
 
     private Object subExecuteForEach() throws Break.StopIterationException {
-        List<WebElement> elements = driver.findElements(locator);
-        LOG.debug("Iterating on " + elements.size() + " elements!");
-        for(WebElement element: elements) {
-            LOG.debug("Storing `" + iteratorName + "` as: " + element);
-            this.context.put(iteratorName, element);
+        int elements = driver.findElements(locator).size();
+        LOG.debug("Iterating on " + elements + " elements!");
+        for(int i = 0; i < elements; ++i) {
+            WebElement element = driver.findElements(locator).get(i);
+            String xpath = getWebElementXPath(element);
+            LOG.debug("Storing `" + iteratorName + "` as: `" + xpath + "`!");
+            this.context.put(iteratorName, xpath);
             doBlock.run();
         }
 
@@ -117,10 +119,10 @@ public class For extends Expression implements Subroutine {
         // Get the custom iterator name, if any
         if(assertOptionalField("iterator-name", String.class, inBlock)) {
             String iteratorName = inBlock.get("iterator-name").toString();
-            Matcher matcher = SendKeys.SPECIAL_CHARACTER_PATTERN.matcher(iteratorName);
+            Matcher matcher = SPECIAL_CHARACTER_PATTERN.matcher(iteratorName);
 
             if(!matcher.find()) {
-                throw new Expression.InvalidExpressionSyntax("iterator name: must match regex pattern: `" + SendKeys.SPECIAL_CHARACTER_PATTERN + "`");
+                throw new Expression.InvalidExpressionSyntax("iterator name: must match regex pattern: `" + SPECIAL_CHARACTER_PATTERN + "`");
             }
             this.iteratorName = iteratorName.substring(1 + matcher.start(), matcher.end() - 1);
         }

@@ -5,7 +5,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +20,7 @@ public class Click extends Expression {
 
     ClickType type = ClickType.ELEMENT;
     By locator = null;
-    String variableName = null;
+    String variableString = null;
     int index = 0;
     Integer timeout = null;
 
@@ -32,17 +31,13 @@ public class Click extends Expression {
     public Object execute() {
         // Fetch the element
         WebElement element;
-        if(locator != null){
+        if(locator != null){ // If the element is a static reference
             element = driver.findElements(locator).get(index);
-        } else {
-            Object rawVariableValue = resolveVariableName(variableName);
-            Type expected = WebElement.class;
-            Type got = rawVariableValue.getClass();
-            if(!(rawVariableValue instanceof WebElement)) {
-                throw new RuntimeException("Click expected variable `" + variableName + "` to be of type `" + expected + "` but got `" + got + "`!");
-            }
-
-            element = (WebElement) rawVariableValue;
+        } else { // If the element is a variable
+            String locatorString  = substituteVariableValue(variableString);
+            LOG.debug("Click Expression using locator: `" + locatorString + "`!");
+            element = driver.findElement((By) by("xpath", locatorString));
+            LOG.debug("Click Expression found element: `" + element + "`!");
         }
 
         // Wait for the element to be clickable
@@ -103,7 +98,7 @@ public class Click extends Expression {
         // Populate the locator
         switch(locatorType){
             case "variable":
-                variableName = locator.substring(1, locator.length() - 1);
+                variableString = locator;
                 break;
             default:
                 this.locator = (By) by(locatorType, locator);

@@ -1,12 +1,21 @@
 package uk.co.spicule.magnesium_script.expressions;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.InvalidArgumentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.spicule.magnesium_script.Parser;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("rawtypes")
 abstract public class Expression {
@@ -23,6 +32,7 @@ abstract public class Expression {
 
   // Static things
   public static final Logger LOG = LoggerFactory.getLogger(Expression.class);
+  static Pattern SPECIAL_CHARACTER_PATTERN = Pattern.compile("\\{[a-zA-Z]+[a-zA-Z_\\-0-9]*[a-zA-Z0-9]*}");
 
   // Instance things
   WebDriver driver;
@@ -189,6 +199,31 @@ abstract public class Expression {
       }
     }
     return null;
+  }
+
+  protected  String substituteVariableValue(String variableString) {
+    Matcher match = SPECIAL_CHARACTER_PATTERN.matcher(variableString);
+
+    // If the variaBle string had no variable indicator, return the original string
+    if(!match.find()) {
+      LOG.warn("Variable string doed not contain a variable! Skipping!");
+      return variableString;
+    }
+
+    // Get the variable name and attempt to resolve the value
+    int start = match.start();
+    int end = match.end();
+    String variableName = variableString.substring(start + 1, end - 1);
+    Object variableValue = resolveVariableName(variableName);
+
+    // If the variable name had no value, return the original string
+    if(variableValue == null) {
+      LOG.warn("Variable `" + variableName + "` had no value! Was it properly declared?");
+      return variableString;
+    }
+
+    // Otherwise, the variable's name and value exist, substitute the value and continue
+    return match.replaceAll(variableValue.toString());
   }
 
   protected Object resolveVariableName(String variableName) {

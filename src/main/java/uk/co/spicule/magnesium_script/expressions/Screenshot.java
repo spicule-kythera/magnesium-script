@@ -16,7 +16,6 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class Screenshot extends Expression {
     String outputDir = null;
-    String fileName = "{SERIAL_NUMBER}-{TAG_NAME}.png";
 
     public Screenshot(WebDriver driver, Expression parent) {
         super(driver, parent);
@@ -29,23 +28,21 @@ public class Screenshot extends Expression {
         if(tagName == null) {
             tagName = "magnesium-script";
         }
-        fileName = fileName.replace("{TAG_NAME}", tagName);
     }
 
     public Object execute() {
-        // Set up the destination path
-        fileName = fileName.replace("{SERIAL_NUMBER}", String.valueOf(System.nanoTime()));
-        Path outputDir = Paths.get(this.outputDir.replaceFirst("~", System.getProperty("user.home")));
-        File destination = new File(outputDir.toAbsolutePath() + File.separator + fileName);
-
-        LOG.debug("Taking a screenshot of page: " + driver.getCurrentUrl() + " and saving it to: " + destination);
-
         // Take the screenshot
         TakesScreenshot camera = (TakesScreenshot) driver;
         File source = camera.getScreenshotAs(OutputType.FILE);
         if(!source.setReadable(true)) {
             throw new RuntimeException("Failed to make file readable:" + source);
         }
+
+        // Set up the destination path
+        Path outputDir = Paths.get(this.outputDir.replaceFirst("~", System.getProperty("user.home")));
+        File destination = new File(outputDir.toAbsolutePath() + File.separator + source.getName());
+
+        LOG.debug("Taking a screenshot of page: " + driver.getCurrentUrl() + " and saving it to: " + destination);
 
         // Move the screenshot to the specified location
         try{
@@ -71,7 +68,6 @@ public class Screenshot extends Expression {
         if(hasTag) {
             tagName = tokens.get("tag-name").toString();
         }
-        fileName = fileName.replace("{TAG_NAME}", tagName);
 
         return this;
     }
