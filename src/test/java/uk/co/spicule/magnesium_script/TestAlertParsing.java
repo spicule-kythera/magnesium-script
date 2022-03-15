@@ -24,7 +24,7 @@ class TestAlertParsing {
 
   @AfterAll
   static void tearDownForAll() {
-    //driver.close(); // TODO: driver.close() is currently broken in the Selenium library, a patch will be needed before uncommenting this
+    driver.close();
     driver = null;
   }
 
